@@ -1,4 +1,4 @@
-import UserAvatar from "../features/authentication/UserAvatar";
+import UserAvatar from "./UserAvatar";
 import HeaderMenu from "./HeaderMenu";
 
 function Header() {
