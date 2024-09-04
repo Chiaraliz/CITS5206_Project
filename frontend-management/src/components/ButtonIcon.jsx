@@ -1,15 +1,21 @@
-import PropTypes from "prop-types";
+import styled from "styled-components";
 
-function ButtonIcon({ children }) {
-  return (
-    <button className="bg-none border-none p-2 rounded-sm transition duration-200 hover:bg-gray-100">
-      <span className="w-9 h-9 text-brand-600">{children}</span>
-    </button>
-  );
-}
+const ButtonIcon = styled.button`
+  background: none;
+  border: none;
+  padding: 0.6rem;
+  border-radius: var(--border-radius-sm);
+  transition: all 0.2s;
 
-ButtonIcon.propTypes = {
-  children: PropTypes.node.isRequired, // 验证 children 是否传递，并且是 React 可渲染的节点
-};
+  &:hover {
+    background-color: var(--color-grey-100);
+  }
+
+  & svg {
+    width: 2.2rem;
+    height: 2.2rem;
+    color: var(--color-brand-600);
+  }
+`;
 
 export default ButtonIcon;

@@ -1,11 +1,21 @@
+import styled from "styled-components";
+
+const StyledLogo = styled.div`
+  text-align: center;
+`;
+
+const Img = styled.img`
+  height: 9.6rem;
+  width: auto;
+`;
+
 function Logo() {
-  // 将图片路径固定为 public 文件夹中的 Logo.png
   const src = "Logo.png";
 
   return (
-    <div className="text-center">
-      <img className="h-24 w-auto" src={src} alt="Logo" />
-    </div>
+    <StyledLogo>
+      <Img src={src} alt="Logo" />
+    </StyledLogo>
   );
 }
 

@@ -1,37 +1,69 @@
 import { NavLink } from "react-router-dom";
+import styled from "styled-components";
 import { HiOutlineHome, HiOutlineUsers } from "react-icons/hi2";
+
+const NavList = styled.ul`
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+`;
+
+const StyledNavLink = styled(NavLink)`
+  &:link,
+  &:visited {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+
+    color: var(--color-grey-600);
+    font-size: 1.6rem;
+    font-weight: 500;
+    padding: 1.2rem 2.4rem;
+    transition: all 0.3s;
+  }
+
+  /* This works because react-router places the active class on the active NavLink */
+  &:hover,
+  &:active,
+  &.active:link,
+  &.active:visited {
+    color: var(--color-grey-800);
+    background-color: var(--color-grey-50);
+    border-radius: var(--border-radius-sm);
+  }
+
+  & svg {
+    width: 2.4rem;
+    height: 2.4rem;
+    color: var(--color-grey-400);
+    transition: all 0.3s;
+  }
+
+  &:hover svg,
+  &:active svg,
+  &.active:link svg,
+  &.active:visited svg {
+    color: var(--color-brand-600);
+  }
+`;
 
 function MainNav() {
   return (
     <nav>
-      <ul className="flex flex-col gap-2">
+      <NavList>
         <li>
-          <NavLink
-            to="/dashboard"
-            className={({ isActive }) =>
-              isActive
-                ? "flex items-center gap-3 text-gray-800 bg-gray-100 rounded-sm p-3 transition-all"
-                : "flex items-center gap-3 text-gray-600 hover:bg-gray-100 hover:text-gray-800 rounded-sm p-3 transition-all"
-            }
-          >
-            <HiOutlineHome className="w-6 h-6 text-gray-400 transition-all group-hover:text-brand-600" />
-            <span>Dashboard</span>
-          </NavLink>
+          <StyledNavLink to="/dashboard">
+            <HiOutlineHome />
+            <span>Home</span>
+          </StyledNavLink>
         </li>
         <li>
-          <NavLink
-            to="/users"
-            className={({ isActive }) =>
-              isActive
-                ? "flex items-center gap-3 text-gray-800 bg-gray-100 rounded-sm p-3 transition-all"
-                : "flex items-center gap-3 text-gray-600 hover:bg-gray-100 hover:text-gray-800 rounded-sm p-3 transition-all"
-            }
-          >
-            <HiOutlineUsers className="w-6 h-6 text-gray-400 transition-all group-hover:text-brand-600" />
+          <StyledNavLink to="/users">
+            <HiOutlineUsers />
             <span>Users</span>
-          </NavLink>
+          </StyledNavLink>
         </li>
-      </ul>
+      </NavList>
     </nav>
   );
 }
