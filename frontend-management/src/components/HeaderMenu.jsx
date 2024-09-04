@@ -1,8 +1,8 @@
 import { HiOutlineUser } from "react-icons/hi2";
 import { useNavigate } from "react-router-dom";
-import Logout from "../features/authentication/Logout";
-import DarkModeToggle from "./DarkModeToggle";
+import { HiArrowRightOnRectangle } from "react-icons/hi2";
 import ButtonIcon from "./ButtonIcon";
+import { HiOutlineMoon } from "react-icons/hi2";
 
 function HeaderMenu() {
   const navigate = useNavigate();
@@ -15,10 +15,12 @@ function HeaderMenu() {
         </ButtonIcon>
       </li>
       <li>
-        <DarkModeToggle />
+        <ButtonIcon>
+          <HiOutlineMoon />
+        </ButtonIcon>
       </li>
       <li>
-        <Logout />
+        <ButtonIcon>{<HiArrowRightOnRectangle />}</ButtonIcon>
       </li>
     </ul>
   );
