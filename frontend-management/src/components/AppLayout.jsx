@@ -1,20 +1,45 @@
+import { Layout } from "antd";
 import { Outlet } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import Header from "./Header";
 
+const { Sider, Content } = Layout;
+
 function AppLayout() {
   return (
-    <div className="grid grid-cols-[26rem_1fr] grid-rows-[auto_1fr] h-screen">
-      <Header className="row-span-1 col-span-2" />
+    <Layout style={{ minHeight: "100vh" }}>
+      {/* 左侧的 Sidebar */}
+      <Sider width={260} theme="light">
+        <Sidebar />
+      </Sider>
 
-      <Sidebar className="row-span-2" />
+      {/* 主布局区域 */}
+      <Layout>
+        {/* 顶部的 Header */}
+        <Header />
 
-      <main className="bg-gray-50 p-16 overflow-y-scroll">
-        <div className="max-w-screen-lg mx-auto flex flex-col gap-8">
-          <Outlet />
-        </div>
-      </main>
-    </div>
+        {/* 内容区域 */}
+        <Content
+          style={{
+            padding: "40px 48px 64px",
+            backgroundColor: "#f9fafb",
+            overflow: "auto",
+          }}
+        >
+          <div
+            style={{
+              maxWidth: "120rem",
+              margin: "0 auto",
+              display: "flex",
+              flexDirection: "column",
+              gap: "32px",
+            }}
+          >
+            <Outlet />
+          </div>
+        </Content>
+      </Layout>
+    </Layout>
   );
 }
 
