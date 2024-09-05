@@ -14,15 +14,19 @@ function Users() {
           <UserTableOperations />
         </Col>
       </Row>
-      <Row>
-        <Row>
-          <Col span={24}>
-            <Button type="primary">Add New User</Button>
-          </Col>
-          <Col span={24}>
-            <SearchBar />
-          </Col>
-        </Row>
+
+      <Row
+        justify="space-between"
+        align="middle"
+        style={{ marginTop: "20px", width: "100%" }}
+      >
+        <Col>
+          <Button type="primary">Add New User</Button>
+        </Col>
+
+        <Col style={{ marginLeft: "20px" }}>
+          <SearchBar />
+        </Col>
       </Row>
     </>
   );
