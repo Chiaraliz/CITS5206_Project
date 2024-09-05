@@ -2,6 +2,7 @@ import { Row, Col, Button } from "antd";
 import Heading from "../components/Heading";
 import UserTableOperations from "../components/UserTableOperations";
 import SearchBar from "../components/SearchBar";
+import MemberTable from "../components/MemberTable";
 
 function Users() {
   return (
@@ -28,6 +29,7 @@ function Users() {
           <SearchBar />
         </Col>
       </Row>
+      <MemberTable />
     </>
   );
 }
