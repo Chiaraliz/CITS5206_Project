@@ -8,7 +8,7 @@ function LoginForm() {
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   return (
-    <form className="px-20 mt-10 flex flex-col gap-5 w-2/3 mx-auto">
+    <form className="xl:px-20 mt-5 flex flex-col gap-5 w-2/3 mx-auto">
       <FormRow label="Email" type="vertical">
         <input
           type="email"
