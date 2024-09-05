@@ -170,7 +170,13 @@ const MemberTable = () => (
       <Column title="First Name" dataIndex="firstName" key="firstName" />
       <Column title="Last Name" dataIndex="lastName" key="lastName" />
     </ColumnGroup>
-    <Column title="Age" dataIndex="age" key="age" />
+    <Column
+      title="Age"
+      dataIndex="age"
+      key="age"
+      defaultSortOrder="descend"
+      sorter={(a, b) => a.age - b.age}
+    />
     <Column title="Address" dataIndex="address" key="address" />
     <Column
       title="Tags"

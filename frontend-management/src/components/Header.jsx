@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { UserOutlined } from "@ant-design/icons";
-import { Avatar } from "antd";
+import { Avatar, Button } from "antd";
 
 const StyledHeader = styled.header`
   background-color: var(--color-grey-0);
@@ -17,7 +17,9 @@ function Header() {
   return (
     <StyledHeader>
       <Avatar size="large" icon={<UserOutlined />} />
-      <div>Username</div>
+
+      <Button>Username</Button>
+      <Button>Log out</Button>
     </StyledHeader>
   );
 }
