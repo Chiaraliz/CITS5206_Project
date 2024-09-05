@@ -4,12 +4,12 @@ import UserTableOperations from "../components/UserTableOperations";
 import SearchBar from "../components/SearchBar";
 import MemberTable from "../components/MemberTable";
 
-function Users() {
+function Members() {
   return (
     <>
       <Row justify="space-between" align="middle" style={{ width: "100%" }}>
         <Col>
-          <Heading as="h1">User Management</Heading>
+          <Heading as="h1">Member Management</Heading>
         </Col>
         <Col>
           <UserTableOperations />
@@ -22,7 +22,7 @@ function Users() {
         style={{ marginTop: "20px", width: "100%" }}
       >
         <Col>
-          <Button type="primary">Add New User</Button>
+          <Button type="primary">Add New Member</Button>
         </Col>
 
         <Col style={{ marginLeft: "20px" }}>
@@ -34,4 +34,4 @@ function Users() {
   );
 }
 
-export default Users;
+export default Members;
