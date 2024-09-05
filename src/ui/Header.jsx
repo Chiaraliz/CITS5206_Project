@@ -3,7 +3,7 @@ import Button from "./Button";
 import WelcomeUser from "../features/profile/WelcomeUser";
 function Header() {
   return (
-    <div className="flex justify-between px-32 py-5 border-b shadow-sm">
+    <div className="flex justify-between px-60 py-5 border-b shadow-sm">
       <a href="https://aasyp.org/">
         <img
           className="h-24"
