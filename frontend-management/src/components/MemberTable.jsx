@@ -195,7 +195,7 @@ const MemberTable = () => (
     <Column
       title="Action"
       key="action"
-      render={(_, record) => (
+      render={() => (
         <Space size="middle">
           <a>Edit</a>
           <a>Delete</a>
