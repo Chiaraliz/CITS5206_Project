@@ -5,7 +5,7 @@ import Dashboard from "./pages/Dashboard";
 import Users from "./pages/Users";
 import Account from "./pages/Account";
 import Login from "./pages/Login";
-
+import PageNotFound from "./pages/PageNotFound";
 import AppLayout from "./components/AppLayout";
 
 function App() {
@@ -22,6 +22,7 @@ function App() {
           </Route>
 
           <Route path="login" element={<Login />} />
+          <Route path="*" element={<PageNotFound />} />
         </Routes>
       </BrowserRouter>
     </>
