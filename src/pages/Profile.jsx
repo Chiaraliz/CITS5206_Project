@@ -1,5 +1,11 @@
+import UserInfoForm from "../features/profile/UserInfoForm";
+
 function Profile() {
-  return <div>Profile Page.</div>;
+  return (
+    <>
+      <UserInfoForm />
+    </>
+  );
 }
 
 export default Profile;
