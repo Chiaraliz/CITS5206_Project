@@ -4,6 +4,7 @@ import PageNotFound from "./pages/PageNotFound";
 import Profile from "./pages/Profile";
 import Subscription from "./pages/Subscription";
 import AppLayout from "./ui/AppLayout";
+import Signup from "./pages/Signup";
 function App() {
   return (
     <BrowserRouter>
@@ -18,6 +19,7 @@ function App() {
         <Route path="login" element={<Login />} />
         <Route path="subscription" element={<Subscription />} />
         <Route path="*" element={<PageNotFound />} />
+        <Route path="signup" element={<Signup />} />
       </Routes>
     </BrowserRouter>
   );
