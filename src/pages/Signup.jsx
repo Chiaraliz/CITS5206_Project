@@ -5,7 +5,9 @@ const Signup = () => {
   return (
     <div className="min-h-screen bg-gray-100">
       <Header />
-      <div className="relative z-20 bg-gray-300 py-12" style={{ transform: 'translateY(-50%)' }}> {/* 使用 transform 向上移动 */}
+      
+      {/* Signup form section with an id for navigation */}
+      <div id="signup-form" className="relative z-20 bg-gray-300 py-12 transform -translate-y-64"> {/* 添加 id */}
         <div className="bg-white mx-auto w-full max-w-4xl shadow-lg rounded-lg p-8">
           <SignupForm />
         </div>
