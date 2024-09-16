@@ -1,6 +1,16 @@
-import Button from "../../ui/Button";
+import { useState } from "react";
+import CustomModal from "../../ui/Modal";
 
 function SubscriptionTable() {
+  const [open, setOpen] = useState(false);
+
+  const showModal = () => {
+    setOpen(true);
+  };
+
+  const hideModal = () => {
+    setOpen(false);
+  };
   return (
     <div className="flex flex-col border-2 border-slate-100 rounded-md shadow-sm">
       <ul className="py-5 px-10 grid  grid-cols-3 border-b">
@@ -29,9 +39,15 @@ function SubscriptionTable() {
           <div className="font-semibold">15/09/2025</div>
         </li>
         <li className="flex items-center text-sm">
-          <Button type={"primary"}>Cancel Subscription</Button>
+          <button
+            className="bg-stone-100 text-stone-600 font-semibold text-sm rounded-lg px-6 py-2 hover:opacity-70 ease-in duration-300"
+            onClick={showModal}
+          >
+            Cancel Subscription
+          </button>
         </li>
       </ul>
+      <CustomModal open={open} hideModal={hideModal} />
     </div>
   );
 }
