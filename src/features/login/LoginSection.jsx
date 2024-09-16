@@ -8,7 +8,12 @@ function LoginSection() {
       <h1 className="xl:text-3xl text-xl text-[#048492] font-bold text-center">
         Sign in to manage your membership
       </h1>
-      <p className="text-center">Not a member? Subscribe now!</p>
+      <p className="text-center">
+        Not a member?{" "}
+        <a href="#" className="text-[#F5B559] font-bold hover:text-yellow-500">
+          Subscribe now!
+        </a>
+      </p>
       <LoginForm />
     </div>
   );
