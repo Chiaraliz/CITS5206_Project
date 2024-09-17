@@ -2,6 +2,7 @@ import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 
 import GlobalStyles from "./styles/GlobalStyles";
 import Dashboard from "./pages/Dashboard";
+import rootDashboard from "./pages/rootDashboard";
 import Users from "./pages/Members";
 import Account from "./pages/Account";
 import Login from "./pages/Login";
@@ -17,6 +18,7 @@ function App() {
           <Route element={<AppLayout />}>
             <Route index element={<Navigate replace to="dashboard" />} />
             <Route path="dashboard" element={<Dashboard />} />
+            <Route path="rootdashboard" element={<rootDashboard />} />
             <Route path="users" element={<Users />} />
             <Route path="account" element={<Account />} />
           </Route>
