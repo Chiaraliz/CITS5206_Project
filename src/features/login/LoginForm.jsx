@@ -2,11 +2,16 @@ import { useState } from "react";
 import FormRow from "../../ui/FormRow";
 import Button from "../../ui/Button";
 import Checkbox from "../../ui/Checkbox";
+import { useNavigate } from "react-router-dom";
 
 function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
+  const navigate = useNavigate();
+  function handleClick() {
+    navigate("/userProfile/:userId");
+  }
   return (
     <form className="xl:px-20 mt-5 flex flex-col gap-5 w-2/3 mx-auto">
       <FormRow label="Email" type="vertical">
@@ -39,7 +44,9 @@ function LoginForm() {
         />
       </FormRow>
       <FormRow type="vertical">
-        <Button type="login">Login</Button>
+        <Button type="login" onClick={handleClick}>
+          Login
+        </Button>
       </FormRow>
     </form>
   );

@@ -1,4 +1,4 @@
-function Button({ children, type }) {
+function Button({ children, type, onClick }) {
   let style = "";
   if (type === "login") {
     style =
@@ -10,7 +10,11 @@ function Button({ children, type }) {
     style =
       "bg-stone-100 text-stone-600 font-semibold text-sm rounded-lg px-6 py-2 hover:opacity-70 ease-in duration-300";
   }
-  return <button className={`${style}`}>{children}</button>;
+  return (
+    <button className={`${style}`} onClick={onClick ? onClick : undefined}>
+      {children}
+    </button>
+  );
 }
 
 export default Button;
