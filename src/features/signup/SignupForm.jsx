@@ -68,20 +68,45 @@ function SignupForm() {
             className="border rounded-full shadow h-9 outline-red-500 px-2 w-full md:w-auto" required
             min="1960-01-01" max="2025-12-31" onChange={(e) => setDateOfBirth(e.target.value)} />
         </FormRow>
+        <FormRow label="What do you hope to get and contribute through your membership? (Optional)" type="vertical">
+          <textarea
+            id="membershipGoals"
+            name="membershipGoals"
+            className="border rounded shadow h-24 outline-red-500 px-2 w-full"
+            placeholder="Your goals and contributions"
+          />
+        </FormRow>
+        <FormRow label="How did you first hear about us?" type="vertical">
+          <select
+            id="referralSource"
+            name="referralSource"
+            className="border rounded shadow h-9 outline-red-500 px-2 w-full md:w-auto"
+            required
+          >
+            <option value="">Select source</option>
+            <option value="Facebook">Facebook</option>
+            <option value="LinkedIn">LinkedIn</option>
+            <option value="Website">Website</option>
+            <option value="University">University</option>
+            <option value="Conference">Conference</option>
+            <option value="Article">Article</option>
+            <option value="Word of mouth">Word of mouth from a friend or colleague</option>
+          </select>
+        </FormRow>
         <FormRow label="Membership Type" type="vertical">
-  <select
-    value={membershipType}
-    onChange={(e) => setMembershipType(e.target.value)}
-    className="border rounded-full shadow h-9 outline-red-500 px-2 w-full md:w-auto"
-    required
-  >
-    <option value="">Select Membership Type</option>
-    <option value="Australian Student">Australian Student ($20AUD/year) - For students enrolled full-time.</option>
-    <option value="Australian Young Professional">Australian Young Professional ($30AUD/year) - For employed professionals.</option>
-    <option value="ASEAN Student">ASEAN Student ($10AUD/year) - For students in ASEAN region.</option>
-    <option value="ASEAN Young Professional">ASEAN Young Professional ($15AUD/year) - For professionals in ASEAN region.</option>
-  </select>
-</FormRow>
+          <select
+            value={membershipType}
+            onChange={(e) => setMembershipType(e.target.value)}
+            className="border rounded-full shadow h-9 outline-red-500 px-2 w-full md:w-auto"
+            required
+          >
+            <option value="">Select Membership Type</option>
+            <option value="Australian Student">Australian Student ($20AUD/year) - For students enrolled full-time.</option>
+            <option value="Australian Young Professional">Australian Young Professional ($30AUD/year) - For employed professionals.</option>
+            <option value="ASEAN Student">ASEAN Student ($10AUD/year) - For students in ASEAN region.</option>
+            <option value="ASEAN Young Professional">ASEAN Young Professional ($15AUD/year) - For professionals in ASEAN region.</option>
+          </select>
+        </FormRow>
         <FormRow>
           <label className="flex items-start space-x-5">
             <input type="checkbox" checked={agree} onChange={(e) => setAgree(e.target.checked)}
