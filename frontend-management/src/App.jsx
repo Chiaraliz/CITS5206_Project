@@ -1,35 +1,31 @@
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+
+import GlobalStyles from "./styles/GlobalStyles";
 import Dashboard from "./pages/Dashboard";
 import Users from "./pages/Users";
-import UserDetail from "./pages/UserDetail";
+import Account from "./pages/Account";
+import Login from "./pages/Login";
+import PageNotFound from "./pages/PageNotFound";
+import AppLayout from "./components/AppLayout";
 
 function App() {
   return (
-    <Router>
-      <div>
-        {/* 导航链接 */}
-        <nav>
-          <ul>
-            <li>
-              <Link to="/">Dashboard</Link>
-            </li>
-            <li>
-              <Link to="/about">Users</Link>
-            </li>
-            <li>
-              <Link to="/userDetail">UserDetail</Link>
-            </li>
-          </ul>
-        </nav>
-
-        {/* 定义路由 */}
+    <>
+      <GlobalStyles />
+      <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/about" element={<Users />} />
-          <Route path="/userDetail" element={<UserDetail />} />
+          <Route element={<AppLayout />}>
+            <Route index element={<Navigate replace to="dashboard" />} />
+            <Route path="dashboard" element={<Dashboard />} />
+            <Route path="users" element={<Users />} />
+            <Route path="account" element={<Account />} />
+          </Route>
+
+          <Route path="login" element={<Login />} />
+          <Route path="*" element={<PageNotFound />} />
         </Routes>
-      </div>
-    </Router>
+      </BrowserRouter>
+    </>
   );
 }
 
