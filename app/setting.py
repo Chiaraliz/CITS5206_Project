@@ -24,10 +24,7 @@ class DevelopmentConfig(BaseConfig):
     # Configure Redis, assuming Redis server is running locally on the default port 6379
     REDIS_URL = "redis://localhost:6379"
 
-class TestingConfig(BaseConfig):
-    TESTING = True
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'app/data-test.db')
-    WTF_CSRF_ENABLED = False
+
 
 class ProductionConfig(BaseConfig):
     SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL') or \
@@ -35,7 +32,6 @@ class ProductionConfig(BaseConfig):
 
 config = {
     'development': DevelopmentConfig,
-    'testing': TestingConfig,
     'production': ProductionConfig,
     'default': DevelopmentConfig
 }
