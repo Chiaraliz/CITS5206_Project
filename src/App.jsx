@@ -1,5 +1,26 @@
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import Login from "./pages/Login";
+import PageNotFound from "./pages/PageNotFound";
+import Profile from "./pages/Profile";
+import Subscription from "./pages/Subscription";
+import AppLayout from "./ui/AppLayout";
 function App() {
-  return <div className="text-slate-100 text-center">Hello World!</div>;
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route element={<AppLayout />}>
+          <Route
+            index
+            element={<Navigate repalce to="userProfile/:userId" />}
+          />
+          <Route path="userProfile/:userId" element={<Profile />} />
+        </Route>
+        <Route path="login" element={<Login />} />
+        <Route path="subscription" element={<Subscription />} />
+        <Route path="*" element={<PageNotFound />} />
+      </Routes>
+    </BrowserRouter>
+  );
 }
 
 export default App;
