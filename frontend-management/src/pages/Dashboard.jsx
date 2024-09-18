@@ -1,12 +1,28 @@
 import Heading from "../components/Heading";
-import Row from "../components/Row";
+
+import { Button, Statistic, Row, Col } from "antd";
 
 function Dashboard() {
   return (
-    <Row type="horizontal">
-      <Heading as="h1">Dashboard</Heading>
-      <p>TEST</p>
-    </Row>
+    <>
+      <Row style={{ marginBottom: "24px" }}>
+        <Heading as="h1">Dashboard</Heading>
+      </Row>
+      <Row style={{ marginBottom: "24px" }}>
+        <Col span={12}>
+          <Statistic title="All Users" value={2333} />
+        </Col>
+        <Col span={12}>
+          <Statistic title="Active Users" value={1145} />
+        </Col>
+      </Row>
+
+      <Row>
+        <Col span={24}>
+          <Button type="primary">Export Database</Button>
+        </Col>
+      </Row>
+    </>
   );
 }
 
