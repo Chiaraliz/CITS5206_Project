@@ -1,7 +1,7 @@
 // src/api/apiService.js
 import axios from "axios";
 
-const API_BASE_URL = "http://localhost:5173//api"; // Replace with your backend URL
+const API_BASE_URL = "http://url//api"; // Replace with your backend URL
 
 // Example API for user management
 const apiService = {
