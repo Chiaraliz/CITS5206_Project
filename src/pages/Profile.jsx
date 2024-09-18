@@ -1,5 +1,13 @@
+import SubscriptionManagement from "../features/profile/SubscriptionManagement";
+import UserInfoForm from "../features/profile/UserInfoForm";
+
 function Profile() {
-  return <div>Profile Page.</div>;
+  return (
+    <>
+      <UserInfoForm />
+      <SubscriptionManagement />
+    </>
+  );
 }
 
 export default Profile;
