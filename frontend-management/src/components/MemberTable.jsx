@@ -1,6 +1,10 @@
+// MemberTable.jsx
+// This component displays a table of members using the Ant Design (antd) Table component.
+// The table has columns for first name, last name, age, address, and tags, along with actions like editing and deleting.
 import { Space, Table, Tag } from "antd";
 const { Column, ColumnGroup } = Table;
 
+// Sample data for the table
 const data = [
   {
     key: "1",
@@ -164,6 +168,7 @@ const data = [
   },
 ];
 
+// The MemberTable component uses antd Table to display the data
 const MemberTable = () => (
   <Table dataSource={data}>
     <ColumnGroup title="Name">
@@ -198,6 +203,7 @@ const MemberTable = () => (
         </>
       )}
     />
+    {/* Actions column with Edit and Delete buttons */}
     <Column
       title="Action"
       key="action"
