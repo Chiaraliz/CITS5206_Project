@@ -5,6 +5,7 @@ from flask_login import LoginManager, UserMixin, login_user, login_required, log
 from app.models import User, Admin
 from app.setting import DevelopmentConfig
 from app.routes import api
+from flasgger import Swagger
 
 import click
 
@@ -14,13 +15,10 @@ def create_app(config_class=DevelopmentConfig):
     
     app.config['SECRET_KEY'] = 'admin'
     app.register_blueprint(api, url_prefix='/api')
-
+    swagger = Swagger(app)
   
 
-    @app.context_processor
-    def inject_popular_posts():
-        popular_posts = Post.query.order_by(Post.score.desc()).limit(5).all()
-        return dict(popular_posts=popular_posts)
+
 
     login_manager = LoginManager(app)
     login_manager.login_view = 'auth.login'
