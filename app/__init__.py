@@ -12,7 +12,8 @@ import click
 def create_app(config_class=DevelopmentConfig):
     app = Flask(__name__)
     app.config.from_object(DevelopmentConfig)
-    
+    app.config['DEBUG'] = True
+
     app.config['SECRET_KEY'] = 'admin'
     app.register_blueprint(api, url_prefix='/api')
     swagger = Swagger(app)
