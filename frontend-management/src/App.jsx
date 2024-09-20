@@ -7,6 +7,7 @@ import Account from "./pages/Account";
 import Login from "./pages/Login";
 import PageNotFound from "./pages/PageNotFound";
 import AppLayout from "./components/AppLayout";
+import ApiTest from "./components/ApiTest"; // 导入ApiTest组件
 
 function App() {
   return (
@@ -19,6 +20,8 @@ function App() {
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="users" element={<Users />} />
             <Route path="account" element={<Account />} />
+            <Route path="apitest" element={<ApiTest />} />{" "}
+            {/* 新增ApiTest路由 */}
           </Route>
 
           <Route path="login" element={<Login />} />
