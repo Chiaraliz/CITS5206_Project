@@ -1,23 +1,16 @@
-// SearchBar.jsx
-// This component renders a search bar using Ant Design (antd).
-// The onSearch function handles the search logic and logs the result to the console.
-
 import { Input, Space } from "antd";
 const { Search } = Input;
 
-// Function to handle search operations
 const onSearch = (value, _e, info) => console.log(info?.source, value);
-
 const SearchBar = () => (
   <Space direction="vertical">
     <Search
-      placeholder="search a member" // Placeholder text for search input
-      allowClear // Allows clearing the search input
-      enterButton="Search" // Label for the search button
-      size="large" // Size of the search input
-      onSearch={onSearch} // Handler for the search action
+      placeholder="search a member"
+      allowClear
+      enterButton="Search"
+      size="large"
+      onSearch={onSearch}
     />
   </Space>
 );
-
 export default SearchBar;

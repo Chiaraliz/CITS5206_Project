@@ -1,24 +1,16 @@
-// UserTableOperations.jsx
-// This component provides table operations such as segmented controls and a dropdown button for user actions.
-// It utilizes Ant Design (antd) components like Segmented and Dropdown.
-
 import { Segmented } from "antd";
 import { UserOutlined } from "@ant-design/icons";
 import { Dropdown, message, Space } from "antd";
 
-// Handler for button clicks
 const handleButtonClick = (e) => {
   message.info("Click on left button.");
   console.log("click left button", e);
 };
-
-// Handler for menu item clicks
 const handleMenuClick = (e) => {
   message.info("Click on menu item.");
   console.log("click", e);
 };
 
-// Dropdown menu items configuration
 const items = [
   {
     label: "1st menu item",
@@ -34,18 +26,16 @@ const items = [
     label: "3rd menu item",
     key: "3",
     icon: <UserOutlined />,
-    danger: true, // Danger style for the third item
+    danger: true,
   },
   {
-    label: "4th menu item",
+    label: "4rd menu item",
     key: "4",
     icon: <UserOutlined />,
     danger: true,
-    disabled: true, // Disable the fourth item
+    disabled: true,
   },
 ];
-
-// Configuration for the dropdown menu
 const menuProps = {
   items,
   onClick: handleMenuClick,
@@ -53,15 +43,13 @@ const menuProps = {
 
 const UserTableOperations = () => (
   <Space size="large">
-    {/* Segmented control for time period selection */}
     <Segmented
       options={["Daily", "Weekly", "Monthly", "Quarterly", "Yearly"]}
       onChange={(value) => {
-        console.log(value); // Log the selected value
+        console.log(value); // string
       }}
     />
 
-    {/* Dropdown button with menu items */}
     <Space wrap>
       <Dropdown.Button menu={menuProps} onClick={handleButtonClick}>
         Dropdown
@@ -69,5 +57,4 @@ const UserTableOperations = () => (
     </Space>
   </Space>
 );
-
 export default UserTableOperations;
