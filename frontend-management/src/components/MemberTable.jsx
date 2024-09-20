@@ -1,11 +1,13 @@
 // MemberTable.jsx
 // This component displays a table of members using the Ant Design (antd) Table component.
 // The table has columns for first name, last name, age, address, and tags, along with actions like editing and deleting.
+import { useEffect, useState } from "react";
 import { Space, Table, Tag } from "antd";
+import axios from "axios"; // Use axios or fetch for making API calls
 const { Column, ColumnGroup } = Table;
 
-// Sample data for the table
-const data = [
+// Hardcoded sample data as fallback
+const fallbackData = [
   {
     key: "1",
     firstName: "John",
@@ -168,53 +170,80 @@ const data = [
   },
 ];
 
-// The MemberTable component uses antd Table to display the data
-const MemberTable = () => (
-  <Table dataSource={data}>
-    <ColumnGroup title="Name">
-      <Column title="First Name" dataIndex="firstName" key="firstName" />
-      <Column title="Last Name" dataIndex="lastName" key="lastName" />
-    </ColumnGroup>
-    <Column
-      title="Age"
-      dataIndex="age"
-      key="age"
-      defaultSortOrder="descend"
-      sorter={(a, b) => a.age - b.age}
-    />
-    <Column title="Address" dataIndex="address" key="address" />
-    <Column
-      title="Tags"
-      dataIndex="tags"
-      key="tags"
-      render={(tags) => (
-        <>
-          {tags.map((tag) => {
-            let color = tag.length > 5 ? "geekblue" : "green";
-            if (tag === "loser") {
-              color = "volcano";
-            }
-            return (
-              <Tag color={color} key={tag}>
-                {tag.toUpperCase()}
-              </Tag>
-            );
-          })}
-        </>
-      )}
-    />
-    {/* Actions column with Edit and Delete buttons */}
-    <Column
-      title="Action"
-      key="action"
-      render={() => (
-        <Space size="middle">
-          <a>Edit</a>
-          <a>Delete</a>
-        </Space>
-      )}
-    />
-  </Table>
-);
+// MemberTable component fetches data and falls back to hardcoded data if the fetch fails
+const MemberTable = () => {
+  const [members, setMembers] = useState(fallbackData); // Initialize with hardcoded data
+  const [loading, setLoading] = useState(false); // For loading state
+
+  // Fetch data from API when component mounts
+  useEffect(() => {
+    const fetchMembers = async () => {
+      setLoading(true);
+      try {
+        // Replace this URL with your actual backend API endpoint
+        const response = await axios.get(
+          "http://your-backend-url.com/api/members"
+        );
+        if (response.data && response.data.length > 0) {
+          setMembers(response.data); // Use the fetched data if available
+        }
+      } catch (error) {
+        console.error("Failed to fetch members, using fallback data.", error);
+        // If fetching fails, it will continue using the fallbackData
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMembers();
+  }, []); // Empty dependency array ensures this runs only once after component mounts
+
+  return (
+    <Table dataSource={members} loading={loading}>
+      <ColumnGroup title="Name">
+        <Column title="First Name" dataIndex="firstName" key="firstName" />
+        <Column title="Last Name" dataIndex="lastName" key="lastName" />
+      </ColumnGroup>
+      <Column
+        title="Age"
+        dataIndex="age"
+        key="age"
+        defaultSortOrder="descend"
+        sorter={(a, b) => a.age - b.age}
+      />
+      <Column title="Address" dataIndex="address" key="address" />
+      <Column
+        title="Tags"
+        dataIndex="tags"
+        key="tags"
+        render={(tags) => (
+          <>
+            {tags.map((tag) => {
+              let color = tag.length > 5 ? "geekblue" : "green";
+              if (tag === "loser") {
+                color = "volcano";
+              }
+              return (
+                <Tag color={color} key={tag}>
+                  {tag.toUpperCase()}
+                </Tag>
+              );
+            })}
+          </>
+        )}
+      />
+      <Column
+        title="Action"
+        key="action"
+        render={() => (
+          <Space size="middle">
+            <a>Edit</a>
+            <a>Delete</a>
+          </Space>
+        )}
+      />
+    </Table>
+  );
+};
 
 export default MemberTable;
