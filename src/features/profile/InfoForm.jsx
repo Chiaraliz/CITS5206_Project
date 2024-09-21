@@ -8,6 +8,13 @@ function InfoForm() {
   const [preferredName, setPreferredName] = useState("Liz");
   const [email, setEmail] = useState("liz@example.com");
   const [dateOfBirth, setDateOfBirth] = useState("2000-01-01");
+  function handleClick() {
+    setFirstName("Liz");
+    setLastName("Li");
+    setPreferredName("Liz");
+    setEmail("liz@example.com");
+    setDateOfBirth("2000-01-01");
+  }
   return (
     <form className="mt-8 w-2/3 flex flex-col  gap-8">
       <FormRow>
@@ -75,7 +82,9 @@ function InfoForm() {
       </FormRow>
       <FormRow type="horizontal">
         <Button type="logout">Save Changes</Button>
-        <Button type="primary">Reset</Button>
+        <Button type="primary" onClick={handleClick}>
+          Reset
+        </Button>
       </FormRow>
     </form>
   );

@@ -2,7 +2,7 @@ import InfoForm from "./InfoForm";
 
 function UserInfoForm() {
   return (
-    <div>
+    <div className="mb-[5rem]">
       <div className="py-6 border-b-2">
         <h1 className="text-3xl font-semibold text-[#048492]">
           Personal Information
