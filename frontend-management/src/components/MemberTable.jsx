@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Space, Table } from "antd";
+import { Space, Table, Button } from "antd";
 import axios from "axios"; // 用于发起 API 请求
 import ColumnGroup from "antd/es/table/ColumnGroup";
 const { Column } = Table;
@@ -238,8 +238,8 @@ const MemberTable = () => {
         key="action"
         render={() => (
           <Space size="middle">
-            <a>Edit</a>
-            <a>Delete</a>
+            <Button type="link">Edit</Button>
+            <Button type="link">Delete</Button>
           </Space>
         )}
       />
