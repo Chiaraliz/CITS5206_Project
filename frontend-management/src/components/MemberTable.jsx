@@ -1,236 +1,237 @@
-// MemberTable.jsx
-// This component displays a table of members using the Ant Design (antd) Table component.
-// The table has columns for first name, last name, age, address, and tags, along with actions like editing and deleting.
 import { useEffect, useState } from "react";
-import { Space, Table, Tag } from "antd";
-import axios from "axios"; // Use axios or fetch for making API calls
-const { Column, ColumnGroup } = Table;
+import { Space, Table } from "antd";
+import axios from "axios"; // 用于发起 API 请求
+import ColumnGroup from "antd/es/table/ColumnGroup";
+const { Column } = Table;
 
-// Hardcoded sample data as fallback
+// 更新后的示例数据，包含20条用户数据，membership_type为"active"和"inactive"
 const fallbackData = [
   {
     key: "1",
-    firstName: "John",
-    lastName: "Brown",
-    age: 32,
-    address: "New York No. 1 Lake Park",
-    tags: ["nice", "developer"],
+    id: 1,
+    first_name: "User1",
+    last_name: "LastName1",
+    email: "user1@example.com",
+    date_of_birth: "1991-02-12",
+    membership_type: "inactive",
   },
   {
     key: "2",
-    firstName: "Jim",
-    lastName: "Green",
-    age: 42,
-    address: "London No. 1 Lake Park",
-    tags: ["loser"],
+    id: 2,
+    first_name: "User2",
+    last_name: "LastName2",
+    email: "user2@example.com",
+    date_of_birth: "1992-03-13",
+    membership_type: "active",
   },
   {
     key: "3",
-    firstName: "Joe",
-    lastName: "Black",
-    age: 32,
-    address: "Sydney No. 1 Lake Park",
-    tags: ["cool", "teacher"],
+    id: 3,
+    first_name: "User3",
+    last_name: "LastName3",
+    email: "user3@example.com",
+    date_of_birth: "1993-04-14",
+    membership_type: "inactive",
   },
   {
     key: "4",
-    firstName: "Michael",
-    lastName: "Smith",
-    age: 28,
-    address: "San Francisco No. 5 Maple Street",
-    tags: ["funny", "engineer"],
+    id: 4,
+    first_name: "User4",
+    last_name: "LastName4",
+    email: "user4@example.com",
+    date_of_birth: "1994-05-15",
+    membership_type: "active",
   },
   {
     key: "5",
-    firstName: "Emily",
-    lastName: "Davis",
-    age: 36,
-    address: "Chicago No. 2 River Road",
-    tags: ["charming", "manager"],
+    id: 5,
+    first_name: "User5",
+    last_name: "LastName5",
+    email: "user5@example.com",
+    date_of_birth: "1995-06-16",
+    membership_type: "inactive",
   },
   {
     key: "6",
-    firstName: "Sarah",
-    lastName: "Taylor",
-    age: 29,
-    address: "Melbourne No. 3 Ocean Avenue",
-    tags: ["kind", "nurse"],
+    id: 6,
+    first_name: "User6",
+    last_name: "LastName6",
+    email: "user6@example.com",
+    date_of_birth: "1996-07-17",
+    membership_type: "active",
   },
   {
     key: "7",
-    firstName: "James",
-    lastName: "Walker",
-    age: 41,
-    address: "Los Angeles No. 7 Elm Street",
-    tags: ["smart", "designer"],
+    id: 7,
+    first_name: "User7",
+    last_name: "LastName7",
+    email: "user7@example.com",
+    date_of_birth: "1997-08-18",
+    membership_type: "inactive",
   },
   {
     key: "8",
-    firstName: "Olivia",
-    lastName: "Harris",
-    age: 30,
-    address: "Toronto No. 4 Pine Lane",
-    tags: ["friendly", "artist"],
+    id: 8,
+    first_name: "User8",
+    last_name: "LastName8",
+    email: "user8@example.com",
+    date_of_birth: "1998-09-19",
+    membership_type: "active",
   },
   {
     key: "9",
-    firstName: "David",
-    lastName: "Johnson",
-    age: 35,
-    address: "Paris No. 6 Cherry Street",
-    tags: ["brilliant", "scientist"],
+    id: 9,
+    first_name: "User9",
+    last_name: "LastName9",
+    email: "user9@example.com",
+    date_of_birth: "1999-01-110",
+    membership_type: "inactive",
   },
   {
     key: "10",
-    firstName: "Sophia",
-    lastName: "Lee",
-    age: 27,
-    address: "Hong Kong No. 9 Willow Street",
-    tags: ["hardworking", "marketer"],
+    id: 10,
+    first_name: "User10",
+    last_name: "LastName10",
+    email: "user10@example.com",
+    date_of_birth: "1990-02-111",
+    membership_type: "active",
   },
   {
     key: "11",
-    firstName: "Daniel",
-    lastName: "Wilson",
-    age: 39,
-    address: "Berlin No. 10 Oak Road",
-    tags: ["enthusiastic", "consultant"],
+    id: 11,
+    first_name: "User11",
+    last_name: "LastName11",
+    email: "user11@example.com",
+    date_of_birth: "1991-03-112",
+    membership_type: "inactive",
   },
   {
     key: "12",
-    firstName: "Mia",
-    lastName: "Clark",
-    age: 26,
-    address: "Singapore No. 12 Bay Avenue",
-    tags: ["creative", "photographer"],
+    id: 12,
+    first_name: "User12",
+    last_name: "LastName12",
+    email: "user12@example.com",
+    date_of_birth: "1992-04-113",
+    membership_type: "active",
   },
   {
     key: "13",
-    firstName: "Ethan",
-    lastName: "Martinez",
-    age: 40,
-    address: "Tokyo No. 15 Forest Drive",
-    tags: ["dedicated", "chef"],
+    id: 13,
+    first_name: "User13",
+    last_name: "LastName13",
+    email: "user13@example.com",
+    date_of_birth: "1993-05-114",
+    membership_type: "inactive",
   },
   {
     key: "14",
-    firstName: "Isabella",
-    lastName: "Lopez",
-    age: 33,
-    address: "Madrid No. 18 Blossom Street",
-    tags: ["energetic", "lawyer"],
+    id: 14,
+    first_name: "User14",
+    last_name: "LastName14",
+    email: "user14@example.com",
+    date_of_birth: "1994-06-115",
+    membership_type: "active",
   },
   {
     key: "15",
-    firstName: "Alexander",
-    lastName: "Garcia",
-    age: 31,
-    address: "Rome No. 22 Sunset Boulevard",
-    tags: ["curious", "researcher"],
+    id: 15,
+    first_name: "User15",
+    last_name: "LastName15",
+    email: "user15@example.com",
+    date_of_birth: "1995-07-116",
+    membership_type: "inactive",
   },
   {
     key: "16",
-    firstName: "Charlotte",
-    lastName: "Brown",
-    age: 37,
-    address: "Amsterdam No. 16 Canal Road",
-    tags: ["polite", "editor"],
+    id: 16,
+    first_name: "User16",
+    last_name: "LastName16",
+    email: "user16@example.com",
+    date_of_birth: "1996-08-117",
+    membership_type: "active",
   },
   {
     key: "17",
-    firstName: "Benjamin",
-    lastName: "Moore",
-    age: 45,
-    address: "Seoul No. 20 Mountain View",
-    tags: ["wise", "consultant"],
+    id: 17,
+    first_name: "User17",
+    last_name: "LastName17",
+    email: "user17@example.com",
+    date_of_birth: "1997-09-118",
+    membership_type: "inactive",
   },
   {
     key: "18",
-    firstName: "Ava",
-    lastName: "Miller",
-    age: 34,
-    address: "Dublin No. 13 Green Street",
-    tags: ["adventurous", "travel agent"],
+    id: 18,
+    first_name: "User18",
+    last_name: "LastName18",
+    email: "user18@example.com",
+    date_of_birth: "1998-01-119",
+    membership_type: "active",
   },
   {
     key: "19",
-    firstName: "William",
-    lastName: "Davis",
-    age: 38,
-    address: "Vienna No. 11 Old Town",
-    tags: ["ambitious", "entrepreneur"],
+    id: 19,
+    first_name: "User19",
+    last_name: "LastName19",
+    email: "user19@example.com",
+    date_of_birth: "1999-02-120",
+    membership_type: "inactive",
   },
   {
     key: "20",
-    firstName: "Emma",
-    lastName: "Martinez",
-    age: 29,
-    address: "Zurich No. 8 Lake View",
-    tags: ["charming", "painter"],
+    id: 20,
+    first_name: "User20",
+    last_name: "LastName20",
+    email: "user20@example.com",
+    date_of_birth: "1990-03-121",
+    membership_type: "active",
   },
 ];
 
-// MemberTable component fetches data and falls back to hardcoded data if the fetch fails
 const MemberTable = () => {
-  const [members, setMembers] = useState(fallbackData); // Initialize with hardcoded data
-  const [loading, setLoading] = useState(false); // For loading state
+  const [members, setMembers] = useState(fallbackData); // 默认使用示例数据
+  const [loading, setLoading] = useState(false);
 
-  // Fetch data from API when component mounts
+  // 从后端 API 获取数据
   useEffect(() => {
     const fetchMembers = async () => {
       setLoading(true);
       try {
-        // Replace this URL with your actual backend API endpoint
+        // 发送请求到后端 API
         const response = await axios.get(
           "http://your-backend-url.com/api/members"
         );
         if (response.data && response.data.length > 0) {
-          setMembers(response.data); // Use the fetched data if available
+          setMembers(response.data); // 如果有数据，使用后端返回的数据
         }
       } catch (error) {
         console.error("Failed to fetch members, using fallback data.", error);
-        // If fetching fails, it will continue using the fallbackData
+        // 如果获取失败，继续使用示例数据
       } finally {
         setLoading(false);
       }
     };
 
     fetchMembers();
-  }, []); // Empty dependency array ensures this runs only once after component mounts
+  }, []); // 空依赖数组，确保只在组件首次加载时运行
 
   return (
     <Table dataSource={members} loading={loading}>
+      <Column title="ID" dataIndex="id" key="id" />
       <ColumnGroup title="Name">
-        <Column title="First Name" dataIndex="firstName" key="firstName" />
-        <Column title="Last Name" dataIndex="lastName" key="lastName" />
+        <Column title="First Name" dataIndex="first_name" key="first_name" />
+        <Column title="Last Name" dataIndex="last_name" key="last_name" />
       </ColumnGroup>
+      <Column title="Email" dataIndex="email" key="email" />
       <Column
-        title="Age"
-        dataIndex="age"
-        key="age"
-        defaultSortOrder="descend"
-        sorter={(a, b) => a.age - b.age}
+        title="Date of Birth"
+        dataIndex="date_of_birth"
+        key="date_of_birth"
       />
-      <Column title="Address" dataIndex="address" key="address" />
       <Column
-        title="Tags"
-        dataIndex="tags"
-        key="tags"
-        render={(tags) => (
-          <>
-            {tags.map((tag) => {
-              let color = tag.length > 5 ? "geekblue" : "green";
-              if (tag === "loser") {
-                color = "volcano";
-              }
-              return (
-                <Tag color={color} key={tag}>
-                  {tag.toUpperCase()}
-                </Tag>
-              );
-            })}
-          </>
-        )}
+        title="Membership Type"
+        dataIndex="membership_type"
+        key="membership_type"
       />
       <Column
         title="Action"
