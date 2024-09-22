@@ -1,5 +1,6 @@
 import { Space, Table, Button } from "antd";
 import ColumnGroup from "antd/es/table/ColumnGroup";
+import PropTypes from "prop-types";
 
 const { Column } = Table;
 
@@ -34,6 +35,12 @@ const MemberTable = ({ members, loading }) => {
       />
     </Table>
   );
+};
+
+// 添加 PropTypes 验证
+MemberTable.propTypes = {
+  members: PropTypes.arrayOf(PropTypes.object).isRequired,
+  loading: PropTypes.bool.isRequired,
 };
 
 export default MemberTable;
