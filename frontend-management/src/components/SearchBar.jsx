@@ -5,10 +5,7 @@
 import { Input, Space } from "antd";
 const { Search } = Input;
 
-// Function to handle search operations
-const onSearch = (value, _e, info) => console.log(info?.source, value);
-
-const SearchBar = () => (
+const SearchBar = ({ onSearch }) => (
   <Space direction="vertical">
     <Search
       placeholder="search a member" // Placeholder text for search input
