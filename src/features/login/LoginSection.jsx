@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import Logo from "../../ui/Logo";
 import LoginForm from "./LoginForm";
 
@@ -10,9 +11,12 @@ function LoginSection() {
       </h1>
       <p className="text-center">
         Not a member?{" "}
-        <a href="#" className="text-[#F5B559] font-bold hover:text-yellow-500">
+        <Link
+          to="/signup"
+          className="text-[#F5B559] font-bold hover:text-yellow-500"
+        >
           Subscribe now!
-        </a>
+        </Link>
       </p>
       <LoginForm />
     </div>
