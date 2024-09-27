@@ -5,6 +5,7 @@ import Profile from "./pages/Profile";
 import Subscription from "./pages/Subscription";
 import AppLayout from "./ui/AppLayout";
 import Signup from "./pages/Signup";
+import ApiTest from "./services/ApiTest";
 function App() {
   return (
     <BrowserRouter>
@@ -20,6 +21,7 @@ function App() {
         <Route path="subscription" element={<Subscription />} />
         <Route path="*" element={<PageNotFound />} />
         <Route path="signup" element={<Signup />} />
+        <Route path="apitest" element={<ApiTest />} />
       </Routes>
     </BrowserRouter>
   );
