@@ -12,4 +12,4 @@ CORS(app)  # 或者 CORS(app, resources={r"/api/*": {"origins": "*"}}) 指定具
 migrate = Migrate(app, db)
 
 if __name__ == '__main__':
-    app.run(port=5000)
+    app.run(port=5000, debug=True)

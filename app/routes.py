@@ -1,20 +1,21 @@
 from flask import Blueprint, request, jsonify
-from app.models import User,Admin
+from app.models import User, Admin
 from app.extensions import db
 import datetime
 
 api = Blueprint('api', __name__)
 
+# Get all members
 @api.route('/members', methods=['GET'])
 def get_members():
     """
-    Get list of all members
+    Get a list of all members
     ---
     tags:
       - Members
     responses:
       200:
-        description: A list of members
+        description: A list of all members
         schema:
           type: array
           items:
@@ -22,40 +23,29 @@ def get_members():
             properties:
               id:
                 type: integer
-                description: The member ID
               first_name:
                 type: string
-                description: The member's first name
               last_name:
                 type: string
-                description: The member's last name
               preferred_name:
                 type: string
-                description: The member's preferred name
               email:
                 type: string
-                description: The member's email
               date_of_birth:
                 type: string
                 format: date
-                description: The member's date of birth
               comment:
                 type: string
-                description: Optional comment about the member
               hear:
                 type: integer
-                description: Member's hearing condition (1-7 scale)
               membership_type:
                 type: integer
-                description: Type of membership
               membership_start_time:
                 type: string
                 format: date-time
-                description: The time the membership started
               membership_expired_time:
                 type: string
                 format: date-time
-                description: The time the membership expires
     """
     members = User.query.all()
     members_list = [{
@@ -64,15 +54,16 @@ def get_members():
         "last_name": member.last_name,
         "preferred_name": member.preferred_name,
         "email": member.email,
-        "date_of_birth": member.date_of_birth.strftime("%d-%m-%Y"),
+        "date_of_birth": member.date_of_birth.strftime("%Y-%m-%d") if member.date_of_birth else None,
         "comment": member.comment,
         "hear": member.hear,
         "membership_type": member.membership_type,
-        "membership_start_time": member.membership_start_time,
-        "membership_expired_time": member.membership_expired_time
+        "membership_start_time": member.membership_start_time.strftime("%Y-%m-%d %H:%M:%S") if member.membership_start_time else None,
+        "membership_expired_time": member.membership_expired_time.strftime("%Y-%m-%d %H:%M:%S") if member.membership_expired_time else None
     } for member in members]
     return jsonify(members_list), 200
 
+# Create a new member
 @api.route('/members', methods=['POST'])
 def create_member():
     """
@@ -116,23 +107,33 @@ def create_member():
         description: Invalid input
     """
     data = request.get_json()
+
+    date_of_birth = data.get('date_of_birth')
+    if isinstance(date_of_birth, str):
+        date_of_birth = datetime.datetime.strptime(date_of_birth, "%d-%m-%Y").date()
+
+    membership_expired_time = data.get('membership_expired_time')
+    if isinstance(membership_expired_time, str):
+        membership_expired_time = datetime.datetime.strptime(membership_expired_time, "%Y-%m-%d %H:%M:%S")
+
     new_member = User(
         first_name=data['first_name'],
         last_name=data['last_name'],
         preferred_name=data['preferred_name'],
         email=data['email'],
         password=data['password'],
-        date_of_birth=datetime.datetime.strptime(data['date_of_birth'], "%d-%m-%Y").date(),
+        date_of_birth=date_of_birth,
         comment=data.get('comment'),
         hear=data['hear'],
         membership_type=data['membership_type'],
         membership_start_time=datetime.datetime.now(),
-        membership_expired_time=data['membership_expired_time']
+        membership_expired_time=membership_expired_time
     )
     db.session.add(new_member)
     db.session.commit()
     return jsonify({"message": "Member created successfully", "id": new_member.id}), 201
 
+# Update a member's information
 @api.route('/members/<int:id>', methods=['PUT'])
 def update_member(id):
     """
@@ -180,18 +181,28 @@ def update_member(id):
     """
     data = request.get_json()
     member = User.query.get_or_404(id)
+
+    date_of_birth = data.get('date_of_birth', None)
+    if date_of_birth and isinstance(date_of_birth, str):
+        date_of_birth = datetime.datetime.strptime(date_of_birth, "%d-%m-%Y").date()
+    membership_expired_time = data.get('membership_expired_time', None)
+    if membership_expired_time and isinstance(membership_expired_time, str):
+        membership_expired_time = datetime.datetime.strptime(membership_expired_time, "%Y-%m-%d %H:%M:%S")
+
     member.first_name = data.get('first_name', member.first_name)
     member.last_name = data.get('last_name', member.last_name)
     member.preferred_name = data.get('preferred_name', member.preferred_name)
     member.email = data.get('email', member.email)
-    member.date_of_birth = datetime.datetime.strptime(data['date_of_birth'], "%d-%m-%Y").date()
+    member.date_of_birth = date_of_birth or member.date_of_birth
     member.comment = data.get('comment', member.comment)
-    member.hear = data['hear']
-    member.membership_type = data['membership_type']
-    member.membership_expired_time = data['membership_expired_time']
+    member.hear = data.get('hear', member.hear)
+    member.membership_type = data.get('membership_type', member.membership_type)
+    member.membership_expired_time = membership_expired_time or member.membership_expired_time
+
     db.session.commit()
     return jsonify({"message": "Member updated successfully"}), 200
 
+# Delete a member
 @api.route('/members/<int:id>', methods=['DELETE'])
 def delete_member(id):
     """
@@ -216,12 +227,11 @@ def delete_member(id):
     db.session.commit()
     return jsonify({"message": "Member deleted successfully"}), 200
 
-
-# 用户注册
+# User registration
 @api.route('/register', methods=['POST'])
 def register():
     """
-    用户注册
+    User registration
     ---
     tags:
       - Users
@@ -240,34 +250,42 @@ def register():
               type: string
             password:
               type: string
+            date_of_birth:
+              type: string
+              format: date
     responses:
       201:
-        description: 注册成功
+        description: Registration successful
       400:
-        description: 注册失败，输入不完整
+        description: Registration failed, incomplete input
     """
     data = request.get_json()
+
     if not all(key in data for key in ['first_name', 'last_name', 'email', 'password']):
         return jsonify({"error": "Missing required fields"}), 400
+
+    date_of_birth = data.get('date_of_birth')
+    if isinstance(date_of_birth, str):
+        date_of_birth = datetime.datetime.strptime(date_of_birth, "%d-%m-%Y").date()
 
     new_user = User(
         first_name=data['first_name'],
         last_name=data['last_name'],
         email=data['email'],
         password=data['password'],
-        date_of_birth=datetime.datetime.strptime(data['date_of_birth'], "%d-%m-%Y").date(),
+        date_of_birth=date_of_birth,
         membership_start_time=datetime.datetime.now(),
-        membership_expired_time=datetime.datetime.now() + datetime.timedelta(days=365)  # 默认1年
+        membership_expired_time=datetime.datetime.now() + datetime.timedelta(days=365)  # Default 1 year
     )
     db.session.add(new_user)
     db.session.commit()
     return jsonify({"message": "User registered successfully", "id": new_user.id}), 201
 
-# 用户登录
+# User login
 @api.route('/login', methods=['POST'])
 def login():
     """
-    用户登录
+    User login
     ---
     tags:
       - Users
@@ -284,9 +302,9 @@ def login():
               type: string
     responses:
       200:
-        description: 登录成功
+        description: Login successful
       400:
-        description: 登录失败，用户名或密码错误
+        description: Login failed, invalid email or password
     """
     data = request.get_json()
     user = User.query.filter_by(email=data['email']).first()
@@ -294,11 +312,11 @@ def login():
         return jsonify({"message": "Login successful", "user_id": user.id}), 200
     return jsonify({"error": "Invalid email or password"}), 400
 
-# 获取用户信息
+# Get user information
 @api.route('/user/<int:user_id>', methods=['GET'])
 def get_user(user_id):
     """
-    获取用户信息
+    Get user information
     ---
     tags:
       - Users
@@ -307,12 +325,12 @@ def get_user(user_id):
         in: path
         required: true
         type: integer
-        description: 用户ID
+        description: User ID
     responses:
       200:
-        description: 返回用户信息
+        description: Returns user information
       404:
-        description: 用户未找到
+        description: User not found
     """
     user = User.query.get_or_404(user_id)
     user_data = {
@@ -324,11 +342,11 @@ def get_user(user_id):
     }
     return jsonify(user_data), 200
 
-# 修改用户信息
+# Update user information
 @api.route('/user/<int:user_id>', methods=['POST'])
 def update_user(user_id):
     """
-    修改用户信息
+    Update user information
     ---
     tags:
       - Users
@@ -337,7 +355,7 @@ def update_user(user_id):
         in: path
         required: true
         type: integer
-        description: 用户ID
+        description: User ID
       - name: body
         in: body
         required: true
@@ -354,9 +372,9 @@ def update_user(user_id):
               type: integer
     responses:
       200:
-        description: 修改成功
+        description: Update successful
       400:
-        description: 修改失败，输入不完整
+        description: Update failed, incomplete input
     """
     data = request.get_json()
     user = User.query.get_or_404(user_id)
@@ -365,15 +383,15 @@ def update_user(user_id):
     user.last_name = data.get('last_name', user.last_name)
     user.email = data.get('email', user.email)
     user.membership_type = data.get('membership_type', user.membership_type)
-    
+
     db.session.commit()
     return jsonify({"message": "User updated successfully"}), 200
 
-# 用户订阅
+# User subscription
 @api.route('/subscribe', methods=['POST'])
 def subscribe():
     """
-    用户订阅
+    User subscription
     ---
     tags:
       - Users
@@ -390,9 +408,9 @@ def subscribe():
               type: integer
     responses:
       200:
-        description: 订阅成功
+        description: Subscription successful
       400:
-        description: 订阅失败
+        description: Subscription failed
     """
     data = request.get_json()
     user = User.query.get_or_404(data['user_id'])
