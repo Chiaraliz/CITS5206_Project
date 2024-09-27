@@ -11,11 +11,11 @@ import { useEffect } from "react";
 // The Members component handles the UI for member management.
 // It includes the ability to add new members, search, and view the member table.
 function Members() {
-  const [members, setMembers] = useState(fallbackData); // 默认使用示例数据
+  const [members, setMembers] = useState(fallbackData);
   // eslint-disable-next-line no-unused-vars
   const [loading, setLoading] = useState(false);
 
-  // 获取真实数据的API调用
+  // Real Api ultilization
   useEffect(() => {
     const fetchMembers = async () => {
       setLoading(true);
