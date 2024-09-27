@@ -2,46 +2,55 @@ import { useState } from "react";
 import FormRow from "../../ui/FormRow";
 import Button from "../../ui/Button";
 import Checkbox from "../../ui/Checkbox";
-// import { useNavigate } from "react-router-dom";
-// import apiService from "../../services/apiService";
+import apiService from "../../services/apiService";
+import { useNavigate } from "react-router-dom";
 
 function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
-  // const [isLoading, setIsLoading] = useState(false);
-  // const [error, setError] = useState(null);
-  // const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
-  // const handleClick = async (e) => {
-  //   e.preventDefault();
+  const handleClick = async (e) => {
+    e.preventDefault();
 
-  //   setError(null);
-  //   setIsLoading(true);
+    if (!email || !password) {
+      setError("Email and password cannot be empty.");
+      return;
+    }
 
-  //   try {
-  //     const response = await apiService.login({
-  //       email,
-  //       password,
-  //       rememberMe,
-  //     });
-  //     console.log(response);
+    setError(null);
+    setIsLoading(true);
 
-  //     // const { token } = response.data;
+    try {
+      const response = await apiService.login({
+        email,
+        password,
+        rememberMe,
+      });
+      console.log(response);
+      const userId = response.user_id;
 
-  //     // localStorage.setItem("token", token);
+      // const { token } = response.data;
 
-  //     // navigate("/user");
-  //   } catch (error) {
-  //     // 处理错误并显示错误消息
-  //     console.error("Login error:", error);
-  //     setError("Invalid email or password. Please try again.");
-  //   } finally {
-  //     setIsLoading(false);
-  // };
+      // localStorage.setItem("token", token);
+
+      navigate(`/userProfile/${userId}`);
+    } catch (error) {
+      console.error("Login error:", error);
+      setError("Invalid email or password. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <form className="xl:px-20 mt-5 flex flex-col gap-5 w-2/3 mx-auto">
+      {error && (
+        <span className="text-red-500 bg-red-200 pl-1 rounded-md">{error}</span>
+      )}
       <FormRow label="Email" type="vertical">
         <input
           type="email"
@@ -72,7 +81,9 @@ function LoginForm() {
         />
       </FormRow>
       <FormRow type="vertical">
-        <Button type="login">Login</Button>
+        <Button type="login" onClick={handleClick} disabled={isLoading}>
+          Login
+        </Button>
       </FormRow>
     </form>
   );

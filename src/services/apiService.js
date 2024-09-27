@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_BASE_URL = "http://url//api"; // Replace with your backend URL
+const API_BASE_URL = "http://127.0.0.1:5000/api"; // Replace with your backend URL
 const CHARGEBEE_BASE_URL = "https://aasyp-test.chargebee.com/api/v2";
 const CHARGEBEE_API_KEY = import.meta.env.VITE_API_KEY;
 
