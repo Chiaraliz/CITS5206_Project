@@ -21,7 +21,7 @@ function Members() {
       setLoading(true);
       try {
         const response = await axios.get("http://localhost:5000/api/members");
-        console.log("Fetched data from API:", response.data);
+        console.log("Fetched datax from API:", response.data);
 
         if (Array.isArray(response.data)) {
           setMembers(response.data);
