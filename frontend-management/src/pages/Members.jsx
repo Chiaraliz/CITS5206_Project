@@ -5,6 +5,8 @@ import SearchBar from "../components/SearchBar";
 import MemberTable from "../components/MemberTable";
 import { useState } from "react";
 import { fallbackData } from "../data/Members";
+import axios from "axios";
+import { useEffect } from "react";
 
 // The Members component handles the UI for member management.
 // It includes the ability to add new members, search, and view the member table.
@@ -12,6 +14,31 @@ function Members() {
   const [members, setMembers] = useState(fallbackData); // 默认使用示例数据
   // eslint-disable-next-line no-unused-vars
   const [loading, setLoading] = useState(false);
+
+  // 获取真实数据的API调用
+  useEffect(() => {
+    const fetchMembers = async () => {
+      setLoading(true);
+      try {
+        const response = await axios.get("http://localhost:5000/api/members");
+        console.log("Fetched data from API:", response.data);
+
+        if (Array.isArray(response.data)) {
+          setMembers(response.data);
+        } else {
+          console.error("API response is not an array.");
+          setMembers(fallbackData);
+        }
+      } catch (error) {
+        console.error("Error fetching data from API:", error);
+        setMembers(fallbackData);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMembers();
+  }, []);
 
   // 搜索逻辑：根据用户输入的内容过滤成员
   const handleSearch = (value) => {
