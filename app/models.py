@@ -67,3 +67,14 @@ class Admin(db.Model):
     def __init__(self, username, password):
         self.username = username
         self.set_password(password)  # 设置并加密密码
+
+class Root(db.Model):
+    __tablename__ = 'root'
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)  # 自动生成的序号
+    name = db.Column(db.String(50), nullable=False, unique=True, index=True)  # root 名称，唯一
+    password = db.Column(db.String(128), nullable=False)  # 直接存储密码，不加密
+
+    def __init__(self, name, password):
+        self.name = name
+        self.password = password  # 直接存储密码，无需加密
