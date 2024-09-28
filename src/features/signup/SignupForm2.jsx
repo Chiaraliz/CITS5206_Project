@@ -35,7 +35,8 @@ function SignupForm() {
 
     if (chargebeeUrl) {
       // 跳转到 Chargebee 的托管结账页面
-      window.location.href = chargebeeUrl;
+      window.open(chargebeeUrl, '_blank');
+      window.location.href = "/successpage";
     } else {
       alert("Invalid membership type");
     }
