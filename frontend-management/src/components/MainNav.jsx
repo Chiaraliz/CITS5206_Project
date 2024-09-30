@@ -1,10 +1,6 @@
-// MainNav.jsx
-// This component represents the navigation sidebar.
-// It provides links to different sections of the application (Dashboard, Users).
-
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom"; // 引入 useLocation
 import styled from "styled-components";
-import { HiOutlineHome, HiOutlineUsers } from "react-icons/hi2";
+import { HiOutlineCog } from "react-icons/hi2"; // 导入 Admin 图标
 
 // Styles for the navigation list
 const NavList = styled.ul`
@@ -52,21 +48,20 @@ const StyledNavLink = styled(NavLink)`
 `;
 
 function MainNav() {
+  const location = useLocation(); // 获取当前的路由路径
+
+  // 仅显示 Admin 选项在 rootDashboard 页面
   return (
     <nav>
       <NavList>
-        <li>
-          <StyledNavLink to="/dashboard">
-            <HiOutlineHome /> {/* Dashboard icon */}
-            <span>Dashboard</span>
-          </StyledNavLink>
-        </li>
-        <li>
-          <StyledNavLink to="/users">
-            <HiOutlineUsers /> {/* Users icon */}
-            <span>Users</span>
-          </StyledNavLink>
-        </li>
+        {location.pathname.toLowerCase().startsWith("/rootdashboard") && (
+          <li>
+            <StyledNavLink to="/rootDashboard">
+              <HiOutlineCog /> {/* Admin Dashboard icon */}
+              <span>Admin</span>
+            </StyledNavLink>
+          </li>
+        )}
       </NavList>
     </nav>
   );

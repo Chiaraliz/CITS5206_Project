@@ -15,7 +15,13 @@ const LoginLayout = styled.main`
   background-color: var(--color-grey-50);
 `;
 
-const Login = () => {
+const RootText = styled.h2`
+  text-align: center; // 中心对齐
+  color: var(--color-grey-600); // 字体颜色
+  margin: 0; // 去掉默认的外边距
+`;
+
+const RootLogin = () => { // 改为大写开头
   const [form] = Form.useForm();
   const [clientReady, setClientReady] = useState(false);
 
@@ -32,11 +38,12 @@ const Login = () => {
     <LoginLayout>
       {/* 在表单上方显示 Logo */}
       <Logo />
+      <RootText>Root</RootText> {/* 添加文本行 */}
 
       <Form
         form={form}
         name="login_form"
-        layout="vertical" // 设置布局为垂直，符合标准登录表单设计
+        layout="vertical" // 设置布局为垂直
         onFinish={onFinish}
       >
         {/* 用户名输入框 */}
@@ -76,4 +83,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default RootLogin; // 修改为RootLogin

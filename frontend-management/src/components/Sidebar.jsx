@@ -1,9 +1,7 @@
-// Sidebar.jsx
-// This component represents the application's sidebar, which contains the logo and main navigation links.
-
+import { useLocation, NavLink } from "react-router-dom"; // 引入 useLocation
 import styled from "styled-components";
-import Logo from "./Logo";
-import MainNav from "./MainNav";
+import { HiOutlineHome, HiOutlineUsers, HiOutlineCog } from "react-icons/hi2"; // 导入图标
+import Logo from "./Logo"; // 引入Logo
 
 // Styled component for the sidebar layout
 const StyledSidebar = styled.aside`
@@ -16,11 +14,73 @@ const StyledSidebar = styled.aside`
   gap: 3.2rem; // Space between logo and navigation
 `;
 
+const NavList = styled.ul`
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+`;
+
+const StyledNavLink = styled(NavLink)`
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  padding: 1.2rem 2.4rem;
+  font-size: 1.6rem;
+  color: var(--color-grey-600);
+
+  &:hover,
+  &.active {
+    color: var(--color-grey-800);
+    background-color: var(--color-grey-50);
+    border-radius: var(--border-radius-sm);
+  }
+
+  & svg {
+    width: 2.4rem;
+    height: 2.4rem;
+  }
+`;
+
 function Sidebar() {
+  const location = useLocation(); // 获取当前路径
+  const path = location.pathname.toLowerCase(); // 忽略路径大小写
+
+  const isRootDashboard = path === "/rootdashboard";
+  const isDashboardOrUsers = path === "/dashboard" || path === "/users";
+
   return (
     <StyledSidebar>
-      <Logo /> {/* Display the application logo */}
-      <MainNav /> {/* Render the navigation links */}
+      <Logo /> {/* 显示应用 Logo */}
+      <nav>
+        <NavList>
+          {/* 如果是 /rootDashboard 页面，显示 Admin */}
+          {isRootDashboard && (
+            <li>
+              <StyledNavLink to="/rootDashboard">
+                <HiOutlineCog /> {/* Admin 图标 */}
+                <span>Admin</span>
+              </StyledNavLink>
+            </li>
+          )}
+          {/* 如果是 /dashboard 或 /users 页面，显示 Dashboard 和 Users */}
+          {isDashboardOrUsers && (
+            <>
+              <li>
+                <StyledNavLink to="/dashboard">
+                  <HiOutlineHome /> {/* Dashboard 图标 */}
+                  <span>Dashboard</span>
+                </StyledNavLink>
+              </li>
+              <li>
+                <StyledNavLink to="/users">
+                  <HiOutlineUsers /> {/* Users 图标 */}
+                  <span>Users</span>
+                </StyledNavLink>
+              </li>
+            </>
+          )}
+        </NavList>
+      </nav>
     </StyledSidebar>
   );
 }

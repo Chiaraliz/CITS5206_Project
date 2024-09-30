@@ -1,7 +1,3 @@
-// AppLayout.jsx
-// This component represents the overall layout of the application.
-// It includes a header, sidebar, and a main content area (which is dynamically loaded using the Outlet from react-router-dom).
-
 import { Outlet } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import Header from "./Header";
@@ -17,19 +13,17 @@ const StyledAppLayout = styled.div`
 
 // Main content area styling
 const Main = styled.main`
-  background-color: var(
-    --color-grey-50
-  ); // Light grey background for the content area
+  background-color: var(--color-grey-50); // Light grey background for the content area
   padding: 4rem 4.8rem 6.4rem; // Padding around the main content
 `;
 
 function AppLayout() {
   return (
     <StyledAppLayout>
-      <Header /> {/* Header at the top */}
-      <Sidebar /> {/* Sidebar on the left */}
+      <Header /> {/* 显示 Header */}
+      <Sidebar /> {/* 始终显示 Sidebar */}
       <Main>
-        <Outlet /> {/* Dynamic content based on current route */}
+        <Outlet /> {/* 显示动态内容 */}
       </Main>
     </StyledAppLayout>
   );

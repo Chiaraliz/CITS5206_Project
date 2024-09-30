@@ -1,10 +1,13 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 
 import GlobalStyles from "./styles/GlobalStyles";
+import AddAdmin from "./pages/AddAdmin";
 import Dashboard from "./pages/Dashboard";
+import RootDashboard from "./pages/rootDashboard";
 import Users from "./pages/Members";
 import Account from "./pages/Account";
 import Login from "./pages/Login";
+import RootLogin from "./pages/RootLogin"; // 将导入的 rootLogin 修改为 RootLogin
 import PageNotFound from "./pages/PageNotFound";
 import AppLayout from "./components/AppLayout";
 import ApiTest from "./api/ApiTest"; // 导入ApiTest组件
@@ -21,8 +24,10 @@ function App() {
             <Route path="users" element={<Users />} />
             <Route path="account" element={<Account />} />
             <Route path="apitest" element={<ApiTest />} />
+            <Route path="rootDashboard" element={<RootDashboard />} />
           </Route>
-
+          <Route path="addAdmin" element={<AddAdmin />} />
+          <Route path="rootlogin" element={<RootLogin />} /> {/* 修改为大写 */}
           <Route path="login" element={<Login />} />
           <Route path="*" element={<PageNotFound />} />
         </Routes>
