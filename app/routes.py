@@ -434,3 +434,152 @@ def subscribe():
     user.membership_type = data['subscription_type']
     db.session.commit()
     return jsonify({"message": "Subscription successful"}), 200
+
+
+# Admin Registration
+@api.route('/admin/register', methods=['POST'])
+def register_admin():
+    """
+    Admin registration
+    ---
+    tags:
+      - Admin
+    parameters:
+      - name: body
+        in: body
+        required: true
+        schema:
+          type: object
+          properties:
+            username:
+              type: string
+            password:
+              type: string
+    responses:
+      201:
+        description: Admin registered successfully
+      400:
+        description: Registration failed, incomplete input
+    """
+    data = request.get_json()
+
+    # Check if all required fields are present
+    if not all(key in data for key in ['username', 'password']):
+        return jsonify({"error": "Missing required fields"}), 400
+
+    # Check if the admin username already exists
+    existing_admin = Admin.query.filter_by(username=data['username']).first()
+    if existing_admin:
+        return jsonify({"error": "Admin already exists"}), 400
+
+    # Create new admin
+    new_admin = Admin(username=data['username'], password=data['password'])
+    db.session.add(new_admin)
+    db.session.commit()
+    return jsonify({"message": "Admin registered successfully", "id": new_admin.id}), 201
+
+# Admin Login
+@api.route('/admin/login', methods=['POST'])
+def login_admin():
+    """
+    Admin login
+    ---
+    tags:
+      - Admin
+    parameters:
+      - name: body
+        in: body
+        required: true
+        schema:
+          type: object
+          properties:
+            username:
+              type: string
+            password:
+              type: string
+    responses:
+      200:
+        description: Admin login successful
+      400:
+        description: Login failed, invalid username or password
+    """
+    data = request.get_json()
+
+    # Check if the admin exists and the password is correct
+    admin = Admin.query.filter_by(username=data['username']).first()
+    if admin and admin.check_password(data['password']):
+        return jsonify({"message": "Admin login successful", "admin_id": admin.id}), 200
+
+    return jsonify({"error": "Invalid username or password"}), 400
+
+# Root Login (Special Route)
+@api.route('/root/login', methods=['POST'])
+def login_root():
+    """
+    Root login (Special)
+    ---
+    tags:
+      - Root
+    parameters:
+      - name: body
+        in: body
+        required: true
+        schema:
+          type: object
+          properties:
+            root_username:
+              type: string
+            root_password:
+              type: string
+    responses:
+      200:
+        description: Root login successful
+      400:
+        description: Login failed, invalid root credentials
+    """
+    data = request.get_json()
+
+    # Check if the provided root credentials are correct
+    root_username = "root"
+    root_password = "supersecretpassword"  # This should be stored securely in a real system
+
+    if data.get('root_username') == root_username and data.get('root_password') == root_password:
+        return jsonify({"message": "Root login successful"}), 200
+
+    return jsonify({"error": "Invalid root credentials"}), 400
+
+# Manage Admins (e.g., List all admins, delete an admin)
+@api.route('/admin/manage', methods=['GET', 'DELETE'])
+def manage_admins():
+    """
+    Manage Admins (List or Delete)
+    ---
+    tags:
+      - Admin
+    responses:
+      200:
+        description: Admin list or admin deleted
+      400:
+        description: Error occurred during operation
+    """
+    if request.method == 'GET':
+        # List all admins
+        admins = Admin.query.all()
+        admin_list = [{
+            "id": admin.id,
+            "username": admin.username
+        } for admin in admins]
+        return jsonify(admin_list), 200
+
+    elif request.method == 'DELETE':
+        # Delete an admin by ID
+        data = request.get_json()
+        admin_id = data.get('admin_id')
+
+        if not admin_id:
+            return jsonify({"error": "Admin ID is required"}), 400
+
+        admin = Admin.query.get_or_404(admin_id)
+        db.session.delete(admin)
+        db.session.commit()
+        return jsonify({"message": "Admin deleted successfully"}), 200
