@@ -2,7 +2,7 @@
 
 import { Form, Input, Button, Row, Col, message } from 'antd';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { registerAdmin } from '../api/adminApi'; // 导入 registerAdmin 函数
 
 const AddAdmin = () => {
   const navigate = useNavigate();
@@ -12,20 +12,16 @@ const AddAdmin = () => {
     console.log('Received values of form: ', values);
     
     try {
-      // 发送数据到后端 API
-      const response = await axios.post('http://localhost:5000/api/admins/add', values);
+      // 调用 API 注册管理员
+      const response = await registerAdmin(values.username, values.password);
 
       // 如果后端返回成功信息，显示提示消息
-      if (response.status === 200) {
-        message.success('Admin added successfully!');
-        // 模拟成功添加管理员后返回到管理员列表页面
-        navigate('/rootdashboard');
-      } else {
-        message.error('Failed to add admin. Please try again.');
-      }
+      message.success('Admin registered successfully!');
+      // 模拟成功添加管理员后返回到管理员列表页面
+      navigate('/rootdashboard');
     } catch (error) {
-      console.error('Error adding admin:', error);
-      message.error('An error occurred while adding the admin. Please try again.');
+      console.error('Error registering admin:', error);
+      message.error('An error occurred while registering the admin. Please try again.');
     }
   };
 
@@ -54,7 +50,7 @@ const AddAdmin = () => {
           </Form.Item>
           <Form.Item>
             <Button type="primary" htmlType="submit">
-              Add Admin
+              Register Admin
             </Button>
           </Form.Item>
         </Form>

@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { Button, Form, Input } from 'antd';
 import Logo from '../components/Logo'; // 确保正确导入 Logo 组件
+import { loginAdmin } from '../api/adminApi'; // 导入 loginAdmin API 请求函数
 
 // 使用 styled-components 定义布局
 const LoginLayout = styled.main`
@@ -24,8 +25,17 @@ const Login = () => {
     setClientReady(true);
   }, []);
 
-  const onFinish = (values) => {
-    console.log('Finish:', values); // 提交表单时输出值
+  // 处理表单提交，发送登录请求
+  const onFinish = async (values) => {
+    try {
+      // 发送 API 请求，使用用户输入的用户名和密码
+      const response = await loginAdmin(values.username, values.password);
+      console.log('Login successful:', response);
+      // 可以在这里处理成功登录的逻辑，例如保存 token 或跳转页面
+    } catch (error) {
+      console.error('Login failed:', error);
+      // 你可以在这里显示错误信息给用户
+    }
   };
 
   return (
