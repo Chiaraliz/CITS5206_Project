@@ -4,33 +4,7 @@ import PropTypes from "prop-types";
 
 const { Column } = Table;
 
-const handleDelete = async (customerId) => {
-  if (window.confirm("Are you sure you want to cancel this subscription?")) {
-    try {
-      // 向后端发送取消请求
-      const response = await fetch("/api/cancel-subscription", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          customer_id: customerId,
-        }),
-      });
-      const result = await response.json();
-      if (result.success) {
-        alert("Subscription cancelled successfully!");
-        // 在这里你可以调用一个方法来刷新页面或移除已取消的用户
-      } else {
-        alert("Failed to cancel subscription: " + result.message);
-      }
-    } catch (error) {
-      console.error("Error cancelling subscription:", error);
-    }
-  }
-};
-
-const MemberTable = ({ members, loading }) => {
+const MemberTable = ({ members, loading, onEdit }) => {
   return (
     <Table dataSource={members} loading={loading} rowKey="id">
       <Column title="ID" dataIndex="id" key="id" />
@@ -52,7 +26,7 @@ const MemberTable = ({ members, loading }) => {
         key="action"
         render={(text, record) => (
           <Space size="middle">
-            <Button onClick={() => handleDelete(record.id)}>Edit Member</Button>
+            <Button onClick={() => onEdit(record)}>Edit</Button>
           </Space>
         )}
       />
@@ -60,9 +34,18 @@ const MemberTable = ({ members, loading }) => {
   );
 };
 
+// 添加 PropTypes 验证
 MemberTable.propTypes = {
-  members: PropTypes.arrayOf(PropTypes.object).isRequired,
-  loading: PropTypes.bool.isRequired,
+  members: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string.isRequired, // 确保成员 id 是 string 类型
+      first_name: PropTypes.string.isRequired, // 确保 first_name 是 string 类型
+      last_name: PropTypes.string.isRequired, // 确保 last_name 是 string 类型
+      email: PropTypes.string.isRequired, // 确保 email 是 string 类型
+    })
+  ).isRequired, // 确保 members 是必需的数组
+  loading: PropTypes.bool.isRequired, // loading 是布尔值，必需
+  onEdit: PropTypes.func.isRequired, // onEdit 是函数，必需
 };
 
 export default MemberTable;
