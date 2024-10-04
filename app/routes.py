@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify
 from app.models import User, Admin
 from app.extensions import db
 import datetime
-from flask import Flask, request, jsonify
+from flask import Flask
 import chargebee
 
 api = Blueprint('api', __name__)
@@ -10,45 +10,6 @@ api = Blueprint('api', __name__)
 # Get all members
 @api.route('/members', methods=['GET'])
 def get_members():
-    """
-    Get a list of all members
-    ---
-    tags:
-      - Members
-    responses:
-      200:
-        description: A list of all members
-        schema:
-          type: array
-          items:
-            type: object
-            properties:
-              id:
-                type: integer
-              first_name:
-                type: string
-              last_name:
-                type: string
-              preferred_name:
-                type: string
-              email:
-                type: string
-              date_of_birth:
-                type: string
-                format: date
-              comment:
-                type: string
-              hear:
-                type: integer
-              membership_type:
-                type: integer
-              membership_start_time:
-                type: string
-                format: date-time
-              membership_expired_time:
-                type: string
-                format: date-time
-    """
     members = User.query.all()
     members_list = [{
         "id": member.id,
@@ -68,48 +29,7 @@ def get_members():
 # Create a new member
 @api.route('/members', methods=['POST'])
 def create_member():
-    """
-    Create a new member
-    ---
-    tags:
-      - Members
-    parameters:
-      - name: body
-        in: body
-        required: true
-        schema:
-          type: object
-          properties:
-            first_name:
-              type: string
-            last_name:
-              type: string
-            preferred_name:
-              type: string
-            email:
-              type: string
-            password:
-              type: string
-            date_of_birth:
-              type: string
-              format: date
-            comment:
-              type: string
-            hear:
-              type: integer
-            membership_type:
-              type: integer
-            membership_expired_time:
-              type: string
-              format: date-time
-    responses:
-      201:
-        description: Member created successfully
-      400:
-        description: Invalid input
-    """
     data = request.get_json()
-
     date_of_birth = data.get('date_of_birth')
     if isinstance(date_of_birth, str):
         date_of_birth = datetime.datetime.strptime(date_of_birth, "%d-%m-%Y").date()
@@ -138,49 +58,6 @@ def create_member():
 # Update a member's information
 @api.route('/members/<int:id>', methods=['PUT'])
 def update_member(id):
-    """
-    Update a member's information
-    ---
-    tags:
-      - Members
-    parameters:
-      - name: id
-        in: path
-        type: integer
-        required: true
-        description: The member ID
-      - name: body
-        in: body
-        required: true
-        schema:
-          type: object
-          properties:
-            first_name:
-              type: string
-            last_name:
-              type: string
-            preferred_name:
-              type: string
-            email:
-              type: string
-            date_of_birth:
-              type: string
-              format: date
-            comment:
-              type: string
-            hear:
-              type: integer
-            membership_type:
-              type: integer
-            membership_expired_time:
-              type: string
-              format: date-time
-    responses:
-      200:
-        description: Member updated successfully
-      404:
-        description: Member not found
-    """
     data = request.get_json()
     member = User.query.get_or_404(id)
 
@@ -207,23 +84,6 @@ def update_member(id):
 # Delete a member
 @api.route('/members/<int:id>', methods=['DELETE'])
 def delete_member(id):
-    """
-    Delete a member
-    ---
-    tags:
-      - Members
-    parameters:
-      - name: id
-        in: path
-        type: integer
-        required: true
-        description: The member ID
-    responses:
-      200:
-        description: Member deleted successfully
-      404:
-        description: Member not found
-    """
     member = User.query.get_or_404(id)
     db.session.delete(member)
     db.session.commit()
@@ -232,55 +92,14 @@ def delete_member(id):
 # 用户注册
 @api.route('/register', methods=['POST'])
 def register():
-    """
-    User registration
-    ---
-    tags:
-      - Users
-    parameters:
-      - name: body
-        in: body
-        required: true
-        schema:
-          type: object
-          properties:
-            first_name:
-              type: string
-            last_name:
-              type: string
-            email:
-              type: string
-            password:
-              type: string
-            preferred_name:
-              type: string
-            comment:
-              type: string
-            hear:
-              type: integer
-            membership_type:
-              type: integer
-            date_of_birth:
-              type: string
-              format: date
-    responses:
-      201:
-        description: Registration successful
-      400:
-        description: Registration failed, incomplete input
-    """
     data = request.get_json()
-
-    # 检查所有必需字段
     if not all(key in data for key in ['first_name', 'last_name', 'email', 'password', 'preferred_name', 'hear', 'membership_type', 'date_of_birth']):
         return jsonify({"error": "Missing required fields"}), 400
 
-    # 日期处理
     date_of_birth = data.get('date_of_birth')
     if isinstance(date_of_birth, str):
         date_of_birth = datetime.datetime.strptime(date_of_birth, "%d-%m-%Y").date()
 
-    # 创建新用户对象
     new_user = User(
         first_name=data['first_name'],
         last_name=data['last_name'],
@@ -288,43 +107,19 @@ def register():
         email=data['email'],
         password=data['password'],
         date_of_birth=date_of_birth,
-        comment=data.get('comment', ''),  # 可选字段
+        comment=data.get('comment', ''),
         hear=data['hear'],
         membership_type=data['membership_type'],
         membership_start_time=datetime.datetime.now(),
-        membership_expired_time=datetime.datetime.now() + datetime.timedelta(days=365)  # 默认1年
+        membership_expired_time=datetime.datetime.now() + datetime.timedelta(days=365)
     )
-    # 添加到数据库
     db.session.add(new_user)
     db.session.commit()
-    # 返回注册成功消息
     return jsonify({"message": "User registered successfully", "id": new_user.id}), 201
 
 # User login
 @api.route('/login', methods=['POST'])
 def login():
-    """
-    User login
-    ---
-    tags:
-      - Users
-    parameters:
-      - name: body
-        in: body
-        required: true
-        schema:
-          type: object
-          properties:
-            email:
-              type: string
-            password:
-              type: string
-    responses:
-      200:
-        description: Login successful
-      400:
-        description: Login failed, invalid email or password
-    """
     data = request.get_json()
     user = User.query.filter_by(email=data['email']).first()
     if user and user.check_password(data['password']):
@@ -334,23 +129,6 @@ def login():
 # Get user information
 @api.route('/user/<int:user_id>', methods=['GET'])
 def get_user(user_id):
-    """
-    Get user information
-    ---
-    tags:
-      - Users
-    parameters:
-      - name: user_id
-        in: path
-        required: true
-        type: integer
-        description: User ID
-    responses:
-      200:
-        description: Returns user information
-      404:
-        description: User not found
-    """
     user = User.query.get_or_404(user_id)
     user_data = {
         "id": user.id,
@@ -364,37 +142,6 @@ def get_user(user_id):
 # Update user information
 @api.route('/user/<int:user_id>', methods=['POST'])
 def update_user(user_id):
-    """
-    Update user information
-    ---
-    tags:
-      - Users
-    parameters:
-      - name: user_id
-        in: path
-        required: true
-        type: integer
-        description: User ID
-      - name: body
-        in: body
-        required: true
-        schema:
-          type: object
-          properties:
-            first_name:
-              type: string
-            last_name:
-              type: string
-            email:
-              type: string
-            membership_type:
-              type: integer
-    responses:
-      200:
-        description: Update successful
-      400:
-        description: Update failed, incomplete input
-    """
     data = request.get_json()
     user = User.query.get_or_404(user_id)
 
@@ -409,141 +156,80 @@ def update_user(user_id):
 # User subscription
 @api.route('/subscribe', methods=['POST'])
 def subscribe():
-    """
-    User subscription
-    ---
-    tags:
-      - Users
-    parameters:
-      - name: body
-        in: body
-        required: true
-        schema:
-          type: object
-          properties:
-            user_id:
-              type: integer
-            subscription_type:
-              type: integer
-    responses:
-      200:
-        description: Subscription successful
-      400:
-        description: Subscription failed
-    """
     data = request.get_json()
     user = User.query.get_or_404(data['user_id'])
     user.membership_type = data['subscription_type']
     db.session.commit()
     return jsonify({"message": "Subscription successful"}), 200
 
-# 统计全部用户数量
+# 统计 Chargebee 中的全部会员数量
 @api.route('/members/count', methods=['GET'])
 def count_all_members():
-    """
-    Count all members
-    ---
-    tags:
-      - Members
-    responses:
-      200:
-        description: Total number of members
-        schema:
-          type: object
-          properties:
-            total_count:
-              type: integer
-    """
-    total_members = User.query.count()
-    return jsonify({"total_count": total_members}), 200
+    try:
+        # 从 Chargebee 获取会员列表
+        result = chargebee.Customer.list({"limit": 100})
+        total_members = len(result)
+        return jsonify({"total_count": total_members}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
 
-# 统计活跃用户数量（会员有效期大于当前时间的）
+# 统计活跃会员数量（有有效订阅的会员）
 @api.route('/members/active/count', methods=['GET'])
 def count_active_members():
-    """
-    Count active members
-    ---
-    tags:
-      - Members
-    responses:
-      200:
-        description: Number of active members (membership not expired)
-        schema:
-          type: object
-          properties:
-            active_count:
-              type: integer
-    """
-    current_time = datetime.datetime.now()
-    active_members = User.query.filter(User.membership_expired_time > current_time).count()
-    return jsonify({"active_count": active_members}), 200
+    try:
+        result = chargebee.Customer.list({"limit": 100})
+        active_members = 0
+        for customer in result:
+            subscription_result = chargebee.Subscription.list({"customer_id[is]": customer.customer.id})
+            if subscription_result and subscription_result[0].subscription.status == 'active':
+                active_members += 1
+
+        return jsonify({"active_count": active_members}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
 
 
 #### 下面是chargebee相关
+
 app = Flask(__name__)
 
-# 初始化 Chargebee，设置站点名称和 API 密钥
-chargebee.configure(site="your_chargebee_site", api_key="your_chargebee_api_key")
+# Chargebee 配置
+chargebee.configure(site="aasyp-test", api_key="test_xE1cVWaHbs6UMqorlDHoyOGH8AU6aJhG")
 
+# 查询所有 Chargebee 会员信息
+chargebee.configure(site="aasyp-test", api_key="test_xE1cVWaHbs6UMqorlDHoyOGH8AU6aJhG")
 
-# 创建订阅的示例代码
-@app.route('/create_subscription', methods=['POST'])
-def create_subscription():
+# 查询所有 Chargebee 会员信息
+@api.route('/list_customers', methods=['GET'])
+def list_customers():
     try:
-        # 从请求中获取数据
-        data = request.json
-        customer_id = data.get('customer_id')
-        plan_id = data.get('plan_id')
-
-        # 调用 Chargebee API 创建订阅
-        result = chargebee.Subscription.create({
-            "customer": {
-                "id": customer_id
-            },
-            "plan_id": plan_id
-        })
-
-        subscription = result['subscription']
-        return jsonify({
-            'subscription_id': subscription.id,
-            'status': subscription.status
-        })
+        result = chargebee.Customer.list({"limit": 100})
+        customers = [{
+            'id': customer.customer.id,
+            'first_name': customer.customer.first_name,
+            'last_name': customer.customer.last_name,
+            'email': customer.customer.email
+        } for customer in result]
+        return jsonify(customers)
     except Exception as e:
         return jsonify({'error': str(e)}), 400
 
-
-# 获取订阅详情
-@app.route('/get_subscription/<subscription_id>', methods=['GET'])
-def get_subscription(subscription_id):
+# 获取某个用户的订阅信息
+@api.route('/user/<string:user_id>/subscription', methods=['GET'])
+def get_subscription(user_id):
     try:
-        # 调用 Chargebee API 获取订阅信息
-        result = chargebee.Subscription.retrieve(subscription_id)
-        subscription = result['subscription']
+        # 查询该用户的所有订阅
+        result = chargebee.Subscription.list({"customer_id[is]": user_id})
 
-        return jsonify({
+        # 取出订阅列表的第一个结果
+        subscription = result[0].subscription
+
+        subscription_data = {
             'subscription_id': subscription.id,
-            'status': subscription.status,
-            'current_term_end': subscription.current_term_end,
-            'next_billing_at': subscription.next_billing_at
-        })
-    except Exception as e:
-        return jsonify({'error': str(e)}), 400
-
-
-# 取消订阅的示例代码
-@app.route('/cancel_subscription/<subscription_id>', methods=['POST'])
-def cancel_subscription(subscription_id):
-    try:
-        # 调用 Chargebee API 取消订阅
-        result = chargebee.Subscription.cancel(subscription_id, {
-            "end_of_term": True  # 设置为 True 表示在订阅结束时取消
-        })
-        subscription = result['subscription']
-
-        return jsonify({
-            'subscription_id': subscription.id,
-            'status': subscription.status
-        })
+            'start_date': subscription.start_date,
+            'end_date': subscription.current_term_end
+        }
+        return jsonify(subscription_data), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 400
 
