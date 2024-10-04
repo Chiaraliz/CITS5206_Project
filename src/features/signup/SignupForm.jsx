@@ -16,12 +16,12 @@ function SignupForm() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
+  
     if (!firstName || !lastName || !email || !membershipType || !password || !agree) {
       alert("Please fill out all required fields and agree to the terms.");
       return;
     }
-
+  
     const data = {
       first_name: firstName,
       last_name: lastName,
@@ -29,10 +29,10 @@ function SignupForm() {
       email: email,
       password: password,
       date_of_birth: dateOfBirth,
-      hear: referralSource,  // hear 和 membership_type 需要和后端匹配
+      hear: referralSource,
       membership_type: membershipType
     };
-
+  
     fetch("http://localhost:5000/register", {
       method: "POST",
       headers: {
@@ -44,6 +44,7 @@ function SignupForm() {
       .then(data => {
         if (data.message) {
           alert(data.message);  // 注册成功的提示
+          // 跳转到 success 页面
           window.location.href = "/successpage";
         } else if (data.error) {
           alert(data.error);  // 错误提示
@@ -104,6 +105,14 @@ function SignupForm() {
             min="1960-01-01"
             max="2025-12-31"
             onChange={(e) => setDateOfBirth(e.target.value)}
+          />
+        </FormRow>
+        <FormRow label="What do you hope to get and contribute through your membership? (Optional)" type="vertical">
+          <textarea
+            id="membershipGoals"
+            name="membershipGoals"
+            className="border rounded shadow h-24 outline-red-500 px-2 w-full"
+            placeholder="Your goals and contributions"
           />
         </FormRow>
 
