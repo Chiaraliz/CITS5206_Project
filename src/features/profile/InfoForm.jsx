@@ -189,7 +189,7 @@ function InfoForm() {
                 name="email"
                 className="border rounded-full shadow h-9 outline-red-500 px-2"
                 required
-                onChange={(e) => setEmail(e.target.value)}
+                readOnly
               />
             </FormRow>
           </FormRow>

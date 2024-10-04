@@ -33,9 +33,8 @@ function LoginForm() {
       console.log(response);
       const userId = response.user_id;
 
-      // const { token } = response.data;
-
-      // localStorage.setItem("token", token);
+      const { token } = response;
+      localStorage.setItem("token", token);
 
       navigate(`/userProfile/${userId}`);
     } catch (error) {

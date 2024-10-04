@@ -5,7 +5,7 @@ import Profile from "./pages/Profile";
 import Subscription from "./pages/Subscription";
 import AppLayout from "./ui/AppLayout";
 import Signup from "./pages/Signup";
-import ApiTest from "./services/ApiTest";
+import ProtectedRoute from "./ui/ProtectedRoute";
 function App() {
   return (
     <BrowserRouter>
@@ -15,13 +15,19 @@ function App() {
             index
             element={<Navigate repalce to="userProfile/:userId" />}
           />
-          <Route path="userProfile/:userId" element={<Profile />} />
+          <Route
+            path="userProfile/:userId"
+            element={
+              <ProtectedRoute>
+                <Profile />
+              </ProtectedRoute>
+            }
+          />
         </Route>
         <Route path="login" element={<Login />} />
         <Route path="subscription" element={<Subscription />} />
         <Route path="*" element={<PageNotFound />} />
         <Route path="signup" element={<Signup />} />
-        <Route path="apitest" element={<ApiTest />} />
       </Routes>
     </BrowserRouter>
   );
