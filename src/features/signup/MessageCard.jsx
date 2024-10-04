@@ -1,11 +1,11 @@
 import { useNavigate } from 'react-router-dom';
 
-const MessageCard = ({ title, message, userId }) => {
+const MessageCard = ({ title, message }) => {
   const navigate = useNavigate();
 
   const handleNavigate = () => {
     // 跳转到指定的userProfile页面，假设你传递了userId作为参数
-    navigate(`/userProfile/${userId}`);
+    navigate(`/Login`);
   };
 
   return (
@@ -21,7 +21,7 @@ const MessageCard = ({ title, message, userId }) => {
         onClick={handleNavigate}
         className="mt-4 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-700"
       >
-        Go to Profile
+        Go to Sign in
       </button>
     </div>
   );

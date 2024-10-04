@@ -20,7 +20,7 @@ function SignupForm() {
     "ASEAN Young Professional": "https://aasyp-test.chargebee.com/hosted_pages/checkout?subscription_items[item_price_id][0]=ASEAN-Young-Professional-AUD-Yearly&subscription_items[quantity][0]=1&layout=in_app"
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async(e) => {
     e.preventDefault();
 
     if (!firstName || !lastName || !email || !membershipType || !password || !agree) {
@@ -30,44 +30,45 @@ function SignupForm() {
 
 
 
-  //   // 发送表单数据到后端
-  //   try {
-  //     const response = await fetch('/register', {
-  //       method: 'POST',
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //       },
-  //       body: JSON.stringify({
-  //         firstName,
-  //         lastName,
-  //         preferredName,
-  //         email,
-  //         password,
-  //         dateOfBirth,
-  //         membershipType,
-  //       }),
-  //     });
+    // 发送表单数据到后端
+    try {
+      const response = await fetch('/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          "first_name": "string",
+          "last_name": "string",
+          "email": "string",
+          "password": "string",
+          "preferred_name": "string",
+          "hear": "integer",
+          "membership_type": "integer",
+          "date_of_birth": "string"
+        }),
+      });
 
-  //     if (response.ok) {
-  //       // 构建 Chargebee 托管页面 URL
-  //       const redirectUrl = `https://your-app.com/success?first_name=${encodeURIComponent(firstName)}&last_name=${encodeURIComponent(lastName)}&email=${encodeURIComponent(email)}&preferred_name=${encodeURIComponent(preferredName)}&dob=${encodeURIComponent(dateOfBirth)}`;
-  //       const chargebeeUrl = urls[membershipType] + `&redirect_url=${encodeURIComponent(redirectUrl)}`;
+      if (response.ok) {
+        // 构建 Chargebee 托管页面 URL
+        const redirectUrl = `https://your-app.com/success?first_name=${encodeURIComponent(firstName)}&last_name=${encodeURIComponent(lastName)}&email=${encodeURIComponent(email)}&preferred_name=${encodeURIComponent(preferredName)}&dob=${encodeURIComponent(dateOfBirth)}`;
+        const chargebeeUrl = urls[membershipType] + `&redirect_url=${encodeURIComponent(redirectUrl)}`;
 
-  //       if (chargebeeUrl) {
-  //         // 使用 window.open 在新标签页打开 Chargebee 的托管结账页面
-  //         window.open(chargebeeUrl, '_blank');
-  //         window.location.href = "/successpage";
-  //       } else {
-  //         alert("Invalid membership type");
-  //       }
-  //     } else {
-  //       const errorData = await response.json();
-  //       alert(`Signup failed: ${errorData.message}`);
-  //     }
-  //   } catch (error) {
-  //     alert(`Error: ${error.message}`);
-  //   }
-  // };
+        if (chargebeeUrl) {
+          // 使用 window.open 在新标签页打开 Chargebee 的托管结账页面
+          window.open(chargebeeUrl, '_blank');
+          window.location.href = "/successpage";
+        } else {
+          alert("Invalid membership type");
+        }
+      } else {
+        const errorData = await response.json();
+        alert(`Signup failed: ${errorData.message}`);
+      }
+    } catch (error) {
+      alert(`Error: ${error.message}`);
+    }
+  };
 
   
     // 构建 Chargebee 托管页面 URL
