@@ -2,6 +2,8 @@ from flask import Blueprint, request, jsonify
 from app.models import User, Admin
 from app.extensions import db
 import datetime
+from flask import Flask, request, jsonify
+import chargebee
 
 api = Blueprint('api', __name__)
 
@@ -475,3 +477,76 @@ def count_active_members():
     current_time = datetime.datetime.now()
     active_members = User.query.filter(User.membership_expired_time > current_time).count()
     return jsonify({"active_count": active_members}), 200
+
+
+#### 下面是chargebee相关
+app = Flask(__name__)
+
+# 初始化 Chargebee，设置站点名称和 API 密钥
+chargebee.configure(site="your_chargebee_site", api_key="your_chargebee_api_key")
+
+
+# 创建订阅的示例代码
+@app.route('/create_subscription', methods=['POST'])
+def create_subscription():
+    try:
+        # 从请求中获取数据
+        data = request.json
+        customer_id = data.get('customer_id')
+        plan_id = data.get('plan_id')
+
+        # 调用 Chargebee API 创建订阅
+        result = chargebee.Subscription.create({
+            "customer": {
+                "id": customer_id
+            },
+            "plan_id": plan_id
+        })
+
+        subscription = result['subscription']
+        return jsonify({
+            'subscription_id': subscription.id,
+            'status': subscription.status
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 400
+
+
+# 获取订阅详情
+@app.route('/get_subscription/<subscription_id>', methods=['GET'])
+def get_subscription(subscription_id):
+    try:
+        # 调用 Chargebee API 获取订阅信息
+        result = chargebee.Subscription.retrieve(subscription_id)
+        subscription = result['subscription']
+
+        return jsonify({
+            'subscription_id': subscription.id,
+            'status': subscription.status,
+            'current_term_end': subscription.current_term_end,
+            'next_billing_at': subscription.next_billing_at
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 400
+
+
+# 取消订阅的示例代码
+@app.route('/cancel_subscription/<subscription_id>', methods=['POST'])
+def cancel_subscription(subscription_id):
+    try:
+        # 调用 Chargebee API 取消订阅
+        result = chargebee.Subscription.cancel(subscription_id, {
+            "end_of_term": True  # 设置为 True 表示在订阅结束时取消
+        })
+        subscription = result['subscription']
+
+        return jsonify({
+            'subscription_id': subscription.id,
+            'status': subscription.status
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 400
+
+
+if __name__ == '__main__':
+    app.run(debug=True)
