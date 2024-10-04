@@ -40,23 +40,19 @@ const MemberTable = ({ members, loading }) => {
       </ColumnGroup>
       <Column title="Email" dataIndex="email" key="email" />
       <Column
-        title="Date of Birth"
-        dataIndex="date_of_birth"
-        key="date_of_birth"
-      />
-      <Column
-        title="Membership Type"
-        dataIndex="membership_type"
-        key="membership_type"
+        title="Created At"
+        dataIndex="created_at"
+        key="created_at"
+        render={(created_at) =>
+          new Date(created_at * 1000).toLocaleDateString()
+        }
       />
       <Column
         title="Action"
         key="action"
         render={(text, record) => (
           <Space size="middle">
-            <Button type="link">Edit</Button>
-            {/* 使用 record.id 传递当前行的 id */}
-            <button onClick={() => handleDelete(record.id)}>Delete</button>
+            <Button onClick={() => handleDelete(record.id)}>Edit Member</Button>
           </Space>
         )}
       />
@@ -64,7 +60,6 @@ const MemberTable = ({ members, loading }) => {
   );
 };
 
-// 添加 PropTypes 验证
 MemberTable.propTypes = {
   members: PropTypes.arrayOf(PropTypes.object).isRequired,
   loading: PropTypes.bool.isRequired,

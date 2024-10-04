@@ -1,4 +1,4 @@
-import { Row, Col, Button } from "antd";
+import { Row, Col } from "antd";
 import Heading from "../components/Heading";
 import UserTableOperations from "../components/UserTableOperations";
 import SearchBar from "../components/SearchBar";
@@ -20,7 +20,9 @@ function Members() {
     const fetchMembers = async () => {
       setLoading(true);
       try {
-        const response = await axios.get("http://localhost:5000/api/members");
+        const response = await axios.get(
+          "http://localhost:5000/api/list_customers"
+        );
         console.log("Fetched datax from API:", response.data);
 
         if (Array.isArray(response.data)) {
@@ -48,23 +50,19 @@ function Members() {
       return;
     }
 
-    const searchTerm = value.trim();
+    const searchTerm = value.trim().toLowerCase();
 
-    // 如果是数字，则搜索ID
-    if (!isNaN(searchTerm)) {
-      const filteredMembers = fallbackData.filter(
-        (member) => member.id === parseInt(searchTerm, 10)
-      );
-      setMembers(filteredMembers);
-    } else {
-      // 如果是字母，搜索first_name或last_name
-      const filteredMembers = fallbackData.filter(
-        (member) =>
-          member.first_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          member.last_name.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-      setMembers(filteredMembers);
-    }
+    const filteredMembers = members.filter(
+      (member) =>
+        (member.first_name &&
+          member.first_name.toLowerCase().includes(searchTerm)) ||
+        (member.last_name &&
+          member.last_name.toLowerCase().includes(searchTerm)) ||
+        (member.email && member.email.toLowerCase().includes(searchTerm)) ||
+        (member.id && member.id.toString().includes(searchTerm))
+    );
+
+    setMembers(filteredMembers);
   };
 
   return (
@@ -82,15 +80,11 @@ function Members() {
 
       {/* Section with 'Add New Member' button and search bar */}
       <Row
-        justify="space-between"
         align="middle"
         style={{ marginTop: "20px", width: "100%" }}
+        justify="end"
       >
         <Col>
-          <Button type="primary">Add New Member</Button>
-          {/* Button to add new members */}
-        </Col>
-        <Col style={{ marginLeft: "20px" }}>
           <SearchBar onSearch={handleSearch} />
           {/* Search bar for filtering members */}
         </Col>

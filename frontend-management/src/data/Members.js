@@ -8,6 +8,7 @@ export const fallbackData = [
     email: "user1@example.com",
     date_of_birth: "1991-02-12",
     membership_type: "inactive",
+    created_at: 1716890205,
   },
   {
     key: "2",
