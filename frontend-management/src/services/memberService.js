@@ -15,8 +15,8 @@ export const fetchMembers = async () => {
 
 export const updateMember = async (userId, values) => {
   try {
-    const response = await axios.post(
-      `http://localhost:5000/user/${userId}`,
+    const response = await axios.put(
+      `http://localhost:5000/members/${userId}`,
       values
     );
     return response;

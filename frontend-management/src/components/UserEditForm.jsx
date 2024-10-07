@@ -16,6 +16,10 @@ const UserEditForm = ({ visible, onCancel, onSubmit, editingMember }) => {
     }
   }, [editingMember, form]);
 
+  const handleFinish = async (values) => {
+    await onSubmit(editingMember.id, values); // 调用父组件传递的 onSubmit 函数，并将编辑的用户 ID 和表单值传递过去
+  };
+
   return (
     <Modal
       title="Edit Member"
@@ -24,7 +28,7 @@ const UserEditForm = ({ visible, onCancel, onSubmit, editingMember }) => {
       footer={null}
     >
       {editingMember && (
-        <Form form={form} layout="vertical" onFinish={onSubmit}>
+        <Form form={form} layout="vertical" onFinish={handleFinish}>
           <Form.Item
             label="First Name"
             name="first_name"
@@ -67,6 +71,7 @@ UserEditForm.propTypes = {
   onSubmit: PropTypes.func.isRequired, // onSubmit 是函数，必需
   editingMember: PropTypes.shape({
     // editingMember 是一个对象，可以为 null
+    id: PropTypes.number.isRequired,
     first_name: PropTypes.string,
     last_name: PropTypes.string,
     email: PropTypes.string,
