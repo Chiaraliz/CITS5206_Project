@@ -3,7 +3,7 @@ import axios from "axios";
 // Fetch the list of all admins
 export const fetchAdmins = async () => {
   try {
-    const response = await axios.get("http://localhost:5000/admin/manage");
+    const response = await axios.get("http://localhost:5000/api/admin/manage");
     return Array.isArray(response.data) ? response.data : [];
   } catch (error) {
     console.error("Error fetching admin list:", error);
@@ -14,7 +14,7 @@ export const fetchAdmins = async () => {
 // Delete an admin by admin ID
 export const deleteAdmin = async (adminId) => {
   try {
-    const response = await axios.delete("http://localhost:5000/admin/manage", {
+    const response = await axios.delete("http://localhost:5000/api/admin/manage", {
       data: { admin_id: adminId }, // Admin ID is sent in the body
     });
     return response;
@@ -27,7 +27,7 @@ export const deleteAdmin = async (adminId) => {
 // Root login function
 export const loginRoot = async (rootUsername, rootPassword) => {
     try {
-      const response = await axios.post("http://localhost:5000/root/login", {
+      const response = await axios.post("http://localhost:5000/api/root/login", {
         root_username: rootUsername,
         root_password: rootPassword,
       });
@@ -41,7 +41,7 @@ export const loginRoot = async (rootUsername, rootPassword) => {
   // Admin registration function
 export const registerAdmin = async (username, password) => {
     try {
-      const response = await axios.post("http://localhost:5000/admin/register", {
+      const response = await axios.post("http://localhost:5000/api/admin/register", {
         username: username,
         password: password,
       });
@@ -55,7 +55,7 @@ export const registerAdmin = async (username, password) => {
   // Admin login function
 export const loginAdmin = async (username, password) => {
     try {
-      const response = await axios.post("http://localhost:5000/admin/login", {
+      const response = await axios.post("http://localhost:5000/api/admin/login", {
         username: username,
         password: password,
       });
