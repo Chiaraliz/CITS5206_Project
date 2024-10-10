@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import styled from "styled-components";
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
-import { Button, Form, Input } from 'antd';
+import { Button, Form, Input, message } from 'antd';
 import Logo from '../components/Logo'; // 确保正确导入 Logo 组件
+import { loginRoot } from '../services/AdminService'; // 正确的路径指向 AdminService.js
+
 
 // 使用 styled-components 定义布局
 const LoginLayout = styled.main`
@@ -21,17 +23,28 @@ const RootText = styled.h2`
   margin: 0; // 去掉默认的外边距
 `;
 
-const RootLogin = () => { // 改为大写开头
+const RootLogin = () => { 
   const [form] = Form.useForm();
   const [clientReady, setClientReady] = useState(false);
 
-  // 当组件挂载时设置客户端准备状态
   useEffect(() => {
     setClientReady(true);
   }, []);
 
-  const onFinish = (values) => {
-    console.log('Finish:', values); // 提交表单时输出值
+  // 处理表单提交
+  const onFinish = async (values) => {
+    try {
+      // 调用 loginRoot API 函数进行登录
+      const response = await loginRoot(values.username, values.password);
+      // 显示成功信息
+      message.success(response.message);
+      console.log('Login Successful:', response);
+      // 在此处可以进行进一步的操作，如跳转页面或保存 token
+    } catch (error) {
+      // 显示错误信息
+      message.error(error.response?.data?.error || 'Login failed');
+      console.error('Login failed:', error);
+    }
   };
 
   return (
@@ -44,7 +57,7 @@ const RootLogin = () => { // 改为大写开头
         form={form}
         name="login_form"
         layout="vertical" // 设置布局为垂直
-        onFinish={onFinish}
+        onFinish={onFinish} // 表单提交时调用 onFinish
       >
         {/* 用户名输入框 */}
         <Form.Item
@@ -83,4 +96,4 @@ const RootLogin = () => { // 改为大写开头
   );
 };
 
-export default RootLogin; // 修改为RootLogin
+export default RootLogin;

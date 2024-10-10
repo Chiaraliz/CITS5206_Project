@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Row, Col, Card, Button, Table } from 'antd';
-import axios from 'axios';
+import { Row, Col, Card, Button, Table, Popconfirm, message } from 'antd';
 import Heading from '../components/Heading';
 import { useNavigate } from 'react-router-dom'; // 引入 useNavigate
+import { fetchAdmins, deleteAdmin } from '../services/AdminService'; // 引入服务函数
 
 const RootDashboard = () => {
   const navigate = useNavigate(); // 使用 useNavigate
   const [totalAdmins, setTotalAdmins] = useState(0); // 总管理员数量
-  const [activeAdmins, setActiveAdmins] = useState(0); // 活跃管理员数量
   const [loading, setLoading] = useState(true); // 加载状态
   const [adminData, setAdminData] = useState([]); // 管理员数据
 
@@ -15,37 +14,32 @@ const RootDashboard = () => {
   useEffect(() => {
     const fetchAdminCounts = async () => {
       try {
-        const totalResponse = await axios.get(
-          "http://localhost:5000/api/admins/count"
-        );
-        setTotalAdmins(totalResponse.data.total_count);
-
-        const activeResponse = await axios.get(
-          "http://localhost:5000/api/admins/active/count"
-        );
-        setActiveAdmins(activeResponse.data.active_count);
-
+        const admins = await fetchAdmins();
+        setTotalAdmins(admins.length); // 总管理员数量为返回数据的长度
+        setAdminData(admins); // 设置管理员数据
         setLoading(false);
-      } catch (error) {
-        console.error("Error fetching admin counts:", error);
-        setLoading(false);
-      }
-    };
-
-    const fetchAdminData = async () => {
-      try {
-        const response = await axios.get("http://localhost:5000/api/admins");
-        setAdminData(response.data); // 假设返回的数据是管理员数组
       } catch (error) {
         console.error("Error fetching admin data:", error);
+        setLoading(false);
       }
     };
 
-    fetchAdminCounts();
-    fetchAdminData(); // 获取管理员信息
+    fetchAdminCounts(); // 获取管理员信息
   }, []);
 
-  // 表格列定义
+  // 删除管理员的函数
+  const handleDelete = async (username) => {
+    try {
+      await deleteAdmin(username); // 使用 deleteAdmin 函数删除管理员
+      message.success('Admin deleted successfully');
+      setAdminData(adminData.filter((admin) => admin.username !== username)); // 删除本地数据中的管理员
+    } catch (error) {
+      message.error('Failed to delete admin');
+      console.error('Error deleting admin:', error);
+    }
+  };
+
+  // 表格列定义，增加了 Edit 和 Delete 操作
   const columns = [
     {
       title: 'Username',
@@ -57,6 +51,30 @@ const RootDashboard = () => {
       dataIndex: 'password',
       key: 'password',
     },
+    {
+      title: 'Actions',
+      key: 'actions',
+      render: (text, record) => (
+        <span>
+          <Button
+            type="link"
+            onClick={() => navigate(`/editAdmin/${record.username}`)} // 点击跳转到编辑页面
+          >
+            Edit
+          </Button>
+          <Popconfirm
+            title="Are you sure to delete this admin?"
+            onConfirm={() => handleDelete(record.username)} // 调用删除函数
+            okText="Yes"
+            cancelText="No"
+          >
+            <Button type="link" danger>
+              Delete
+            </Button>
+          </Popconfirm>
+        </span>
+      ),
+    },
   ];
 
   return (
@@ -66,21 +84,16 @@ const RootDashboard = () => {
       </Row>
 
       <Row gutter={16} style={{ marginBottom: '24px' }}>
-        <Col span={12}>
+        <Col span={24}>
           <Card title="Total Admins" loading={loading}>
             <p>{totalAdmins}</p>
-          </Card>
-        </Col>
-        <Col span={12}>
-          <Card title="Active Admins" loading={loading}>
-            <p>{activeAdmins}</p>
           </Card>
         </Col>
       </Row>
 
       <Row>
         <Col span={24}>
-          <Button type="primary" onClick={() => navigate("/addAdmin")}> {/* 注意这里的路径 */}
+          <Button type="primary" onClick={() => navigate("/addAdmin")}>
             Add Admin
           </Button>
         </Col>

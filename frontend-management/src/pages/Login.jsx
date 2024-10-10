@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import styled from "styled-components";
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
-import { Button, Form, Input } from 'antd';
+import { Button, Form, Input, message } from 'antd';
 import Logo from '../components/Logo'; // 确保正确导入 Logo 组件
+import { loginRoot } from '../services/AdminService'; // 正确的路径指向 AdminService.js
+
 
 // 使用 styled-components 定义布局
 const LoginLayout = styled.main`
@@ -24,8 +26,20 @@ const Login = () => {
     setClientReady(true);
   }, []);
 
-  const onFinish = (values) => {
-    console.log('Finish:', values); // 提交表单时输出值
+  // 表单提交时处理登录请求
+  const onFinish = async (values) => {
+    try {
+      // 调用 loginUser API 函数进行用户登录
+      const response = await loginUser(values.username, values.password);
+      // 登录成功的反馈
+      message.success(response.message);
+      console.log('Login Successful:', response);
+      // 在此处可以进一步处理，如页面跳转或保存 token
+    } catch (error) {
+      // 登录失败的反馈
+      message.error(error.response?.data?.error || 'Login failed');
+      console.error('Login failed:', error);
+    }
   };
 
   return (
@@ -77,3 +91,4 @@ const Login = () => {
 };
 
 export default Login;
+
