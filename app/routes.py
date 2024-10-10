@@ -233,6 +233,33 @@ def get_subscription(user_id):
     except Exception as e:
         return jsonify({'error': str(e)}), 400
 
+# 更新 Chargebee 会员信息
+@api.route('/user/<string:user_id>/update', methods=['POST'])
+def update_customer(user_id):
+    try:
+        data = request.get_json()
+        update_params = {}
+
+        # 如果请求中包含这些字段，则添加到更新参数中
+        if 'first_name' in data:
+            update_params['first_name'] = data['first_name']
+        if 'last_name' in data:
+            update_params['last_name'] = data['last_name']
+        if 'email' in data:
+            update_params['email'] = data['email']
+
+        # 调用 Chargebee API 更新会员信息
+        customer = chargebee.Customer.update(user_id, update_params).customer
+
+        return jsonify({
+            'id': customer.id,
+            'first_name': customer.first_name,
+            'last_name': customer.last_name,
+            'email': customer.email
+        }), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 400
+
 
 if __name__ == '__main__':
     app.run(debug=True)
