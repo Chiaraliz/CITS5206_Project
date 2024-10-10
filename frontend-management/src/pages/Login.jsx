@@ -3,8 +3,8 @@ import styled from "styled-components";
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { Button, Form, Input, message } from 'antd';
 import Logo from '../components/Logo'; // 确保正确导入 Logo 组件
-import { loginRoot } from '../services/AdminService'; // 正确的路径指向 AdminService.js
-
+import { loginRoot } from '../services/AdminService'; // 确保指向正确的 AdminService 路径
+import { useNavigate } from 'react-router-dom'; // 引入 useNavigate 钩子
 
 // 使用 styled-components 定义布局
 const LoginLayout = styled.main`
@@ -20,6 +20,7 @@ const LoginLayout = styled.main`
 const Login = () => {
   const [form] = Form.useForm();
   const [clientReady, setClientReady] = useState(false);
+  const navigate = useNavigate(); // 使用 useNavigate 钩子进行页面导航
 
   // 当组件挂载时设置客户端准备状态
   useEffect(() => {
@@ -29,12 +30,14 @@ const Login = () => {
   // 表单提交时处理登录请求
   const onFinish = async (values) => {
     try {
-      // 调用 loginUser API 函数进行用户登录
-      const response = await loginUser(values.username, values.password);
+      // 调用 loginRoot API 函数进行用户登录
+      const response = await loginRoot(values.username, values.password);
       // 登录成功的反馈
       message.success(response.message);
       console.log('Login Successful:', response);
-      // 在此处可以进一步处理，如页面跳转或保存 token
+      
+      // 跳转到 Dashboard 页面
+      navigate('/dashboard'); // 假设 "/dashboard" 是 Dashboard 页面的路由路径
     } catch (error) {
       // 登录失败的反馈
       message.error(error.response?.data?.error || 'Login failed');
@@ -91,4 +94,3 @@ const Login = () => {
 };
 
 export default Login;
-

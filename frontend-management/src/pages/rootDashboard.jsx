@@ -58,7 +58,7 @@ const RootDashboard = () => {
         <span>
           <Button
             type="link"
-            onClick={() => navigate(`/editAdmin/${record.username}`)} // 点击跳转到编辑页面
+            onClick={() => navigate(`/editAdmin/${record.id}`)} // 使用 admin.id 而不是 username 作为参数
           >
             Edit
           </Button>
@@ -105,7 +105,7 @@ const RootDashboard = () => {
           <Table
             columns={columns}
             dataSource={adminData}
-            rowKey="username"
+            rowKey="id" // 使用 id 作为 rowKey
             pagination={false}
           />
         </Col>

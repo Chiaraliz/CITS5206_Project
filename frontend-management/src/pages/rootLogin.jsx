@@ -3,8 +3,9 @@ import styled from "styled-components";
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { Button, Form, Input, message } from 'antd';
 import Logo from '../components/Logo'; // 确保正确导入 Logo 组件
-import { loginRoot } from '../services/AdminService'; // 正确的路径指向 AdminService.js
-
+import { loginRoot } from '../services/AdminService'; // 确保指向 AdminService.js
+import { useNavigate } from 'react-router-dom'; // 引入 useNavigate 钩子
+import { useMoveBack } from '../hooks/useMoveBack'; // 引入 useMoveBack 钩子
 
 // 使用 styled-components 定义布局
 const LoginLayout = styled.main`
@@ -18,14 +19,16 @@ const LoginLayout = styled.main`
 `;
 
 const RootText = styled.h2`
-  text-align: center; // 中心对齐
-  color: var(--color-grey-600); // 字体颜色
-  margin: 0; // 去掉默认的外边距
+  text-align: center;
+  color: var(--color-grey-600);
+  margin: 0;
 `;
 
 const RootLogin = () => { 
   const [form] = Form.useForm();
   const [clientReady, setClientReady] = useState(false);
+  const navigate = useNavigate(); // 使用 useNavigate 钩子进行页面导航
+  const moveBack = useMoveBack(); // 获取返回上一页的函数
 
   useEffect(() => {
     setClientReady(true);
@@ -39,7 +42,9 @@ const RootLogin = () => {
       // 显示成功信息
       message.success(response.message);
       console.log('Login Successful:', response);
-      // 在此处可以进行进一步的操作，如跳转页面或保存 token
+
+      // 跳转到 RootDashboard 页面
+      navigate('/rootdashboard'); // 假设 "/rootdashboard" 是 RootDashboard 页面的路由路径
     } catch (error) {
       // 显示错误信息
       message.error(error.response?.data?.error || 'Login failed');
@@ -90,6 +95,13 @@ const RootLogin = () => {
               Log in
             </Button>
           )}
+        </Form.Item>
+        
+        {/* 取消按钮 */}
+        <Form.Item>
+          <Button type="default" onClick={moveBack}>
+            Cancel
+          </Button>
         </Form.Item>
       </Form>
     </LoginLayout>

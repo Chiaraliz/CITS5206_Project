@@ -13,16 +13,16 @@ export const fetchAdmins = async () => {
 
 // Delete an admin by admin ID
 export const deleteAdmin = async (adminId) => {
-  try {
-    const response = await axios.delete("http://localhost:5000/api/admin/manage", {
-      data: { admin_id: adminId }, // Admin ID is sent in the body
-    });
-    return response;
-  } catch (error) {
-    console.error("Error deleting admin:", error);
-    throw error;
-  }
-};
+    try {
+      // 使用 URL 参数传递 admin_id
+      const response = await axios.delete(`http://localhost:5000/api/admin/manage/${adminId}`);
+      return response;
+    } catch (error) {
+      console.error("Error deleting admin:", error);
+      throw error;
+    }
+  };
+  
 
 // Root login function
 export const loginRoot = async (rootUsername, rootPassword) => {
@@ -62,6 +62,17 @@ export const loginAdmin = async (username, password) => {
       return response.data; // Return response data on successful login
     } catch (error) {
       console.error("Error during admin login:", error.response?.data || error);
+      throw error;
+    }
+  };
+
+  // Update an admin by admin ID
+export const editAdmin = async (adminId, values) => {
+    try {
+      const response = await axios.put(`http://localhost:5000/api/admin/update/${adminId}`, values);
+      return response;
+    } catch (error) {
+      console.error("Error updating admin:", error);
       throw error;
     }
   };
