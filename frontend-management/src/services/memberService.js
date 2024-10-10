@@ -15,13 +15,26 @@ export const fetchMembers = async () => {
 
 export const updateMember = async (userId, values) => {
   try {
-    const response = await axios.put(
-      `http://localhost:5000/api/members/${userId}`,
+    const response = await axios.post(
+      `http://localhost:5000/api/user/${userId}`,
       values
     );
     return response;
   } catch (error) {
     console.error("Error updating user:", error);
+    throw error;
+  }
+};
+
+export const updateChargebeeMember = async (userId, values) => {
+  try {
+    const response = await axios.post(
+      `http://localhost:5000/api/user/${userId}/update`,
+      values
+    );
+    return response;
+  } catch (error) {
+    console.error("Error updating Chargebee user:", error);
     throw error;
   }
 };
