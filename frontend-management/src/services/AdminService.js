@@ -69,7 +69,7 @@ export const loginAdmin = async (username, password) => {
   // Update an admin by admin ID
 export const editAdmin = async (adminId, values) => {
     try {
-      const response = await axios.put(`http://localhost:5000/api/admin/update/${adminId}`, values);
+      const response = await axios.post(`http://localhost:5000/api/admin/manage/${adminId}`, values);
       return response;
     } catch (error) {
       console.error("Error updating admin:", error);
