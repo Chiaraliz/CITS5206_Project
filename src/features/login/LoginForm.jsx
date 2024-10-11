@@ -35,6 +35,7 @@ function LoginForm() {
 
       const { token } = response;
       localStorage.setItem("token", token);
+      localStorage.setItem("email", email);
 
       navigate(`/userProfile/${userId}`);
     } catch (error) {

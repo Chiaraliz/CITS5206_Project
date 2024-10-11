@@ -47,20 +47,70 @@ const apiService = {
   },
   //interact with chargebee api
   //customerId from chargebee
-  fetchSubscriptionsByCustomerId: async (customerId) => {
+  fetchSubscriptionsByEmail: async (email) => {
+    let allCustomers = [];
+    let offset = null;
+    let matchedCustomerId = null;
+    let subscriptions = [];
+
     try {
-      const response = await axios.get(`${CHARGEBEE_BASE_URL}/subscriptions`, {
-        params: {
-          customer_id: customerId,
-        },
-        auth: {
-          username: CHARGEBEE_API_KEY,
-          password: "",
-        },
-      });
-      return response.data;
+      // 1. 获取所有客户数据
+      do {
+        const response = await axios.get(`${CHARGEBEE_BASE_URL}/customers`, {
+          params: {
+            limit: 100, // 每次请求的最大记录数
+            offset: offset,
+          },
+          auth: {
+            username: CHARGEBEE_API_KEY,
+            password: "",
+          },
+        });
+
+        // 添加当前页的客户数据
+        allCustomers = allCustomers.concat(response.data.list);
+
+        // 更新offset以获取下一页数据
+        offset = response.data.next_offset;
+      } while (offset);
+
+      // 2. 查找与指定email匹配的客户
+      for (let customerData of allCustomers) {
+        const customer = customerData.customer;
+        if (customer.email === email) {
+          matchedCustomerId = customer.id; // 找到匹配的客户ID
+          break; // 找到匹配的客户后直接退出循环
+        }
+      }
+
+      if (!matchedCustomerId) {
+        return `No customer found with email: ${email}`; // 如果没有找到匹配的客户
+      }
+
+      // 3. 使用 customer_id 获取客户的订阅信息
+      const subscriptionResponse = await axios.get(
+        `${CHARGEBEE_BASE_URL}/subscriptions`,
+        {
+          params: {
+            customer_id: matchedCustomerId, // 根据customer_id获取订阅信息
+          },
+          auth: {
+            username: CHARGEBEE_API_KEY,
+            password: "",
+          },
+        }
+      );
+
+      // 获取到的订阅信息
+      subscriptions = subscriptionResponse.data.list;
+
+      if (subscriptions.length > 0) {
+        return subscriptions; // 返回该客户的订阅数据
+      } else {
+        return `No subscriptions found for customer with email: ${email}`;
+      }
     } catch (error) {
-      console.error("Error fetching subscriptions by customer ID:", error);
+      console.error("Error fetching subscriptions by email:", error);
       throw error;
     }
   },
