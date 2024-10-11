@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import FormRow from "../../ui/FormRow";
 import Button from "../../ui/Button";
 import Checkbox from "../../ui/Checkbox";
@@ -12,6 +12,16 @@ function LoginForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    // 检查 localStorage 中是否保存了用户名和密码
+    const remembered = localStorage.getItem("rememberMe");
+    if (remembered === "true") {
+      setEmail(localStorage.getItem("rememberedEmail") || "");
+      setPassword(localStorage.getItem("rememberedPassword") || "");
+      setRememberMe(true);
+    }
+  }, []);
 
   const handleClick = async (e) => {
     e.preventDefault();
@@ -35,9 +45,20 @@ function LoginForm() {
 
       const { token } = response;
       localStorage.setItem("token", token);
-      localStorage.setItem("email", email);
 
-      navigate(`/userProfile/${userId}`);
+      // 如果用户选择了 "Remember Me"，将用户名和密码存储到 localStorage
+      if (rememberMe) {
+        localStorage.setItem("rememberMe", "true");
+        localStorage.setItem("rememberedEmail", email);
+        localStorage.setItem("rememberedPassword", password);
+      } else {
+        // 如果没有选择 "Remember Me"，清除已保存的用户名和密码
+        localStorage.removeItem("rememberMe");
+        localStorage.removeItem("rememberedEmail");
+        localStorage.removeItem("rememberedPassword");
+      }
+
+      navigate(`/userProfile/${userId}`, { replace: true });
     } catch (error) {
       console.error("Login error:", error);
       setError("Invalid email or password. Please try again.");

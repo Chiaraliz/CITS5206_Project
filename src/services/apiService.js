@@ -1,8 +1,6 @@
 import axios from "axios";
 
 const API_BASE_URL = "http://127.0.0.1:5000/api"; // Replace with your backend URL
-const CHARGEBEE_BASE_URL = "https://aasyp-test.chargebee.com/api/v2";
-const CHARGEBEE_API_KEY = import.meta.env.VITE_API_KEY;
 
 const apiService = {
   login: async (loginData) => {
@@ -47,71 +45,43 @@ const apiService = {
   },
   //interact with chargebee api
   //customerId from chargebee
-  fetchSubscriptionsByEmail: async (email) => {
-    let allCustomers = [];
-    let offset = null;
-    let matchedCustomerId = null;
-    let subscriptions = [];
-
+  getSubscriptionByUserId: async (userId) => {
     try {
-      // 1. 获取所有客户数据
-      do {
-        const response = await axios.get(`${CHARGEBEE_BASE_URL}/customers`, {
-          params: {
-            limit: 100, // 每次请求的最大记录数
-            offset: offset,
-          },
-          auth: {
-            username: CHARGEBEE_API_KEY,
-            password: "",
-          },
-        });
-
-        // 添加当前页的客户数据
-        allCustomers = allCustomers.concat(response.data.list);
-
-        // 更新offset以获取下一页数据
-        offset = response.data.next_offset;
-      } while (offset);
-
-      // 2. 查找与指定email匹配的客户
-      for (let customerData of allCustomers) {
-        const customer = customerData.customer;
-        if (customer.email === email) {
-          matchedCustomerId = customer.id; // 找到匹配的客户ID
-          break; // 找到匹配的客户后直接退出循环
-        }
-      }
-
-      if (!matchedCustomerId) {
-        return `No customer found with email: ${email}`; // 如果没有找到匹配的客户
-      }
-
-      // 3. 使用 customer_id 获取客户的订阅信息
-      const subscriptionResponse = await axios.get(
-        `${CHARGEBEE_BASE_URL}/subscriptions`,
-        {
-          params: {
-            customer_id: matchedCustomerId, // 根据customer_id获取订阅信息
-          },
-          auth: {
-            username: CHARGEBEE_API_KEY,
-            password: "",
-          },
-        }
+      // 调用 API 根据 userId 获取订阅信息
+      const response = await axios.get(
+        `${API_BASE_URL}/user/${userId}/subscription`
       );
 
-      // 获取到的订阅信息
-      subscriptions = subscriptionResponse.data.list;
+      // 提取返回的订阅数据
+      const subscription = response.data;
 
-      if (subscriptions.length > 0) {
-        return subscriptions; // 返回该客户的订阅数据
-      } else {
-        return `No subscriptions found for customer with email: ${email}`;
+      // 检查 subscription 是否为空对象或没有订阅项目
+      if (!subscription || Object.keys(subscription).length === 0) {
+        return {
+          error: "No subscription available", // 返回自定义错误信息
+        };
       }
+
+      // 返回订阅信息
+      return {
+        subscription_items: subscription.subscription_items, // 订阅项目
+        currency_code: subscription.currency_code, // 货币代码
+        billing_period_unit: subscription.billing_period_unit, // 计费周期单位
+        status: subscription.status, // 订阅状态
+        started_at: new Date(
+          subscription.started_at * 1000
+        ).toLocaleDateString(), // 订阅开始日期
+        current_term_end: new Date(
+          subscription.current_term_end * 1000
+        ).toLocaleDateString(), // 当前订阅期结束日期
+      };
     } catch (error) {
-      console.error("Error fetching subscriptions by email:", error);
-      throw error;
+      // 处理异常
+      console.error(
+        `Error fetching subscription for user ${userId}:`,
+        error.message
+      );
+      return { error: error.message };
     }
   },
 };

@@ -2,38 +2,68 @@ import { useState } from 'react';
 import FormRow from "../../ui/FormRow";
 import Button from "../../ui/Button";
 
+// 定义会员类型对应的付款URL
+const membershipUrls = {
+  1: "https://aasyp-test.chargebee.com/hosted_pages/checkout?subscription_items[item_price_id][0]=Australian-Student-AUD-Yearly&subscription_items[quantity][0]=1&layout=in_app",
+  2: "https://aasyp-test.chargebee.com/hosted_pages/checkout?subscription_items[item_price_id][0]=Australian-Young-Professional-AUD-Yearly&subscription_items[quantity][0]=1&layout=in_app",
+  3: "https://aasyp-test.chargebee.com/hosted_pages/checkout?subscription_items[item_price_id][0]=ASEAN-Student-AUD-Yearly&subscription_items[quantity][0]=1&layout=in_app",
+  4: "https://aasyp-test.chargebee.com/hosted_pages/checkout?subscription_items[item_price_id][0]=ASEAN-Young-Professional-AUD-Yearly&subscription_items[quantity][0]=1&layout=in_app"
+};
+
 function SignupForm() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [preferredName, setPreferredName] = useState("");
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [dateOfBirth, setDateOfBirth] = useState("2000-01-01");
 
   const [membershipType, setMembershipType] = useState("");
+  const [referralSource, setReferralSource] = useState(""); 
   const [agree, setAgree] = useState(false);
 
   const handleSubmit = (e) => {
-    e.preventDefault(); // 防止页面刷新
-
-    if (!firstName || !lastName || !email || !membershipType || !agree) {
+    e.preventDefault();
+  
+    if (!firstName || !lastName || !email || !membershipType || !password || !agree) {
       alert("Please fill out all required fields and agree to the terms.");
       return;
     }
-
-    // 示例：根据选定的会员类型跳转到相应的处理URL
-    const urls = {
-      "Australian Student": "",
-      "Australian Young Professional": "",
-      "ASEAN Student": "",
-      "ASEAN Young Professional": ""
+  
+    const data = {
+      first_name: firstName,
+      last_name: lastName,
+      preferred_name: preferredName,
+      email: email,
+      password: password,
+      date_of_birth: dateOfBirth,
+      hear: referralSource,
+      membership_type: membershipType
     };
-
-    const url = urls[membershipType];
-    if (url) {
-      window.location.href = url;
-    } else {
-      alert("Invalid membership type selected.");
-    }
+  
+    fetch("http://localhost:5000/api/register", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(data)
+    })
+      .then(response => response.json())
+      .then(data => {
+        if (data.message) {
+          alert(data.message);  // 注册成功的提示
+          const paymentUrl = membershipUrls[membershipType];  // 根据会员类型获取URL
+          if (paymentUrl) {
+            window.open(paymentUrl, '_blank')
+            window.location.href = "/successpage";  // 跳转到 Chargebee 付款页面
+          }
+        } else if (data.error) {
+          alert(data.error);  // 错误提示
+        }
+      })
+      .catch(error => {
+        console.error("Error:", error);
+      });
   };
 
   return (
@@ -63,10 +93,30 @@ function SignupForm() {
             className="border rounded-full shadow h-9 outline-red-500 px-2 w-full md:w-auto" required
             onChange={(e) => setEmail(e.target.value)} />
         </FormRow>
+        <FormRow label="Password" type="vertical">
+          <input
+            type="password"
+            value={password}
+            id="password"
+            name="password"
+            className="border rounded-full shadow h-9 outline-red-500 px-2 w-full md:w-auto"
+            required
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        </FormRow>
+
         <FormRow label="Date of Birth" type="vertical">
-          <input type="date" value={dateOfBirth} id="dateOfBirth" name="dateOfBirth"
-            className="border rounded-full shadow h-9 outline-red-500 px-2 w-full md:w-auto" required
-            min="1960-01-01" max="2025-12-31" onChange={(e) => setDateOfBirth(e.target.value)} />
+          <input
+            type="date"
+            value={dateOfBirth}
+            id="dateOfBirth"
+            name="dateOfBirth"
+            className="border rounded-full shadow h-9 outline-red-500 px-2 w-full md:w-auto"
+            required
+            min="1960-01-01"
+            max="2025-12-31"
+            onChange={(e) => setDateOfBirth(e.target.value)}
+          />
         </FormRow>
         <FormRow label="What do you hope to get and contribute through your membership? (Optional)" type="vertical">
           <textarea
@@ -76,37 +126,40 @@ function SignupForm() {
             placeholder="Your goals and contributions"
           />
         </FormRow>
-        <FormRow label="How did you first hear about us?" type="vertical">
-          <select
-            id="referralSource"
-            name="referralSource"
-            className="border rounded shadow h-9 outline-red-500 px-2 w-full md:w-auto"
-            required
-          >
-            <option value="">Select source</option>
-            <option value="Facebook">Facebook</option>
-            <option value="LinkedIn">LinkedIn</option>
-            <option value="Website">Website</option>
-            <option value="University">University</option>
-            <option value="Conference">Conference</option>
-            <option value="Article">Article</option>
-            <option value="Word of mouth">Word of mouth from a friend or colleague</option>
-          </select>
-        </FormRow>
+
         <FormRow label="Membership Type" type="vertical">
           <select
             value={membershipType}
-            onChange={(e) => setMembershipType(e.target.value)}
+            onChange={(e) => setMembershipType(parseInt(e.target.value))}
             className="border rounded-full shadow h-9 outline-red-500 px-2 w-full md:w-auto"
             required
           >
             <option value="">Select Membership Type</option>
-            <option value="Australian Student">Australian Student ($20AUD/year) - For students enrolled full-time.</option>
-            <option value="Australian Young Professional">Australian Young Professional ($30AUD/year) - For employed professionals.</option>
-            <option value="ASEAN Student">ASEAN Student ($10AUD/year) - For students in ASEAN region.</option>
-            <option value="ASEAN Young Professional">ASEAN Young Professional ($15AUD/year) - For professionals in ASEAN region.</option>
+            <option value="1">Australian Student ($20AUD/year)</option>
+            <option value="2">Australian Young Professional ($30AUD/year)</option>
+            <option value="3">ASEAN Student ($10AUD/year)</option>
+            <option value="4">ASEAN Young Professional ($15AUD/year)</option>
           </select>
         </FormRow>
+
+        <FormRow label="How did you first hear about us?" type="vertical">
+          <select
+            value={referralSource}
+            onChange={(e) => setReferralSource(parseInt(e.target.value))}
+            className="border rounded-full shadow h-9 outline-red-500 px-2 w-full md:w-auto"
+            required
+          >
+            <option value="">Select source</option>
+            <option value="1">Facebook</option>
+            <option value="2">LinkedIn</option>
+            <option value="3">Website</option>
+            <option value="4">University</option>
+            <option value="5">Conference</option>
+            <option value="6">Article</option>
+            <option value="7">Word of mouth</option>
+          </select>
+        </FormRow>
+
         <FormRow>
           <label className="flex items-start space-x-5">
             <input type="checkbox" checked={agree} onChange={(e) => setAgree(e.target.checked)}
@@ -118,6 +171,7 @@ function SignupForm() {
             </span>
           </label>
         </FormRow>
+
         <FormRow type="horizontal">
           <Button type="primary" className="ml-4 bg-red-500 text-white text-l font-medium px-4 py-2 rounded hover:bg-red-600 transition duration-300">Submit</Button>
         </FormRow>
