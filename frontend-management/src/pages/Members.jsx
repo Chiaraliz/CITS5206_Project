@@ -15,7 +15,6 @@ function Members() {
     editingMember,
     handleEdit,
     handleSubmit,
-    handleChargebeeSubmit,
   } = useMembers();
 
   const handleSearch = async (value) => {
@@ -56,7 +55,6 @@ function Members() {
         onCancel={() => handleEdit(null)}
         onSubmit={handleSubmit}
         editingMember={editingMember}
-        onChargebeeSubmit={handleChargebeeSubmit}
       />
     </>
   );

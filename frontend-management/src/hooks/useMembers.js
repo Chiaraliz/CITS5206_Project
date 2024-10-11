@@ -1,10 +1,6 @@
 // hooks/useMembers.js
 import { useState, useEffect } from "react";
-import {
-  fetchMembers,
-  updateMember,
-  updateChargebeeMember,
-} from "../services/memberService";
+import { fetchMembers, updateMember } from "../services/memberService";
 
 export const useMembers = () => {
   const [members, setMembers] = useState([]);
@@ -33,18 +29,6 @@ export const useMembers = () => {
     }
   };
 
-  const handleChargebeeSubmit = async (values) => {
-    if (editingMember) {
-      try {
-        await updateChargebeeMember(editingMember.id, values);
-        const updatedData = await fetchMembers();
-        setMembers(updatedData);
-      } catch (error) {
-        console.error("Error updating Chargebee user:", error);
-      }
-    }
-  };
-
   return {
     members,
     setMembers, // 添加这一行以返回 setMembers
@@ -52,6 +36,5 @@ export const useMembers = () => {
     editingMember,
     handleEdit,
     handleSubmit,
-    handleChargebeeSubmit,
   };
 };
