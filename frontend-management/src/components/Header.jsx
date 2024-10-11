@@ -1,10 +1,7 @@
-// Header.jsx
-// This component renders the top navigation header for the application.
-// It includes a user avatar, username, and logout button.
-
 import styled from "styled-components";
 import { UserOutlined } from "@ant-design/icons";
 import { Avatar, Button } from "antd";
+import { useNavigate } from "react-router-dom"; // Import useNavigate from react-router-dom
 
 // Styled component for the header
 const StyledHeader = styled.header`
@@ -18,11 +15,21 @@ const StyledHeader = styled.header`
 `;
 
 function Header() {
+  const navigate = useNavigate(); // Initialize useNavigate for redirection
+
+  const handleLogout = () => {
+    // Perform any logout logic here, like clearing user data or tokens
+    localStorage.removeItem("authToken"); // Example of clearing user token (optional)
+
+    // After logout logic, redirect the user to the login page
+    navigate("/login");
+  };
+
   return (
     <StyledHeader>
       <Avatar size="large" icon={<UserOutlined />} /> {/* User avatar */}
       <Button>Username</Button> {/* Display username */}
-      <Button>Log out</Button> {/* Logout button */}
+      <Button onClick={handleLogout}>Log out</Button> {/* Logout button */}
     </StyledHeader>
   );
 }

@@ -7,9 +7,10 @@ import RootDashboard from "./pages/rootDashboard";
 import Users from "./pages/Members";
 import Account from "./pages/Account";
 import Login from "./pages/Login";
-import RootLogin from "./pages/RootLogin"; // 将导入的 rootLogin 修改为 RootLogin
+import RootLogin from "./pages/rootLogin"; // 将导入的 rootLogin 修改为 RootLogin
 import PageNotFound from "./pages/PageNotFound";
 import AppLayout from "./components/AppLayout";
+import EditAdmin from "./pages/EditAdmin"; 
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
             <Route path="account" element={<Account />} />
             <Route path="rootDashboard" element={<RootDashboard />} />
           </Route>
+          <Route path="EditAdmin" element={<EditAdmin />} />
           <Route path="addAdmin" element={<AddAdmin />} />
           <Route path="rootlogin" element={<RootLogin />} /> {/* 修改为大写 */}
           <Route path="login" element={<Login />} />
