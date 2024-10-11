@@ -17,8 +17,11 @@ const MemberTable = ({ members, loading, onEdit }) => {
         title="Created At"
         dataIndex="created_at"
         key="created_at"
-        render={(created_at) =>
-          new Date(created_at * 1000).toLocaleDateString()
+        render={
+          (created_at) =>
+            created_at
+              ? new Date(created_at).toLocaleDateString() // 直接将日期字符串转换为 Date 对象
+              : "N/A" // 如果 created_at 为 null 或 undefined，显示 "N/A"
         }
       />
       <Column
