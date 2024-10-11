@@ -5,8 +5,7 @@ import PropTypes from "prop-types"; // 引入 PropTypes
 const UserEditForm = ({
   visible,
   onCancel,
-  onSubmit,
-  onChargebeeSubmit,
+  onChargebeeSubmit, // 删除 onSubmit
   editingMember,
 }) => {
   const [form] = Form.useForm();
@@ -22,28 +21,9 @@ const UserEditForm = ({
     }
   }, [editingMember, form]);
 
-  // 提交到你们自己的数据库
-  const handleFinish = async (values) => {
-    try {
-      await onSubmit(editingMember.id, values); // 提交数据到本地数据库
-      notification.success({
-        message: "Update Successful",
-        description: "The member information has been updated successfully.",
-        placement: "topRight",
-      });
-      form.resetFields(); // 清空表单
-    } catch (error) {
-      notification.error({
-        message: "Update Failed",
-        description:
-          "There was an error updating the member. Please try again.",
-        placement: "topRight",
-      });
-    }
-  };
-
   // 提交到 Chargebee
-  const handleChargebeeSubmit = async () => {
+  const handleFinish = async () => {
+    // 删除第二个 values 定义
     try {
       const values = await form.validateFields(); // 验证并获取表单的值
       await onChargebeeSubmit(editingMember.id, values); // 提交数据到 Chargebee
@@ -96,14 +76,7 @@ const UserEditForm = ({
           </Form.Item>
           <Form.Item>
             <Button type="primary" htmlType="submit">
-              Submit to Database
-            </Button>
-            <Button
-              type="default"
-              onClick={handleChargebeeSubmit}
-              style={{ marginLeft: "10px" }}
-            >
-              Submit to Chargebee
+              Submit
             </Button>
             <Button onClick={onCancel} style={{ marginLeft: "10px" }}>
               Cancel
@@ -119,10 +92,8 @@ const UserEditForm = ({
 UserEditForm.propTypes = {
   visible: PropTypes.bool.isRequired, // visible 是布尔值，必需
   onCancel: PropTypes.func.isRequired, // onCancel 是函数，必需
-  onSubmit: PropTypes.func.isRequired, // onSubmit 是函数，必需
-  onChargebeeSubmit: PropTypes.func.isRequired, // onChargebeeSubmit 是函数，必需
+  onChargebeeSubmit: PropTypes.func.isRequired, // 删除 onSubmit
   editingMember: PropTypes.shape({
-    // editingMember 是一个对象，可以为 null
     id: PropTypes.number.isRequired,
     first_name: PropTypes.string,
     last_name: PropTypes.string,
