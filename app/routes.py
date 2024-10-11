@@ -214,24 +214,44 @@ def list_customers():
     except Exception as e:
         return jsonify({'error': str(e)}), 400
 
-# 获取某个用户的订阅信息
+
 @api.route('/user/<string:user_id>/subscription', methods=['GET'])
 def get_subscription(user_id):
     try:
-        # 查询该用户的所有订阅
-        result = chargebee.Subscription.list({"customer_id[is]": user_id})
+        # Retrieve user email from the database
+        user = User.query.get_or_404(user_id)
+        user_email = user.email
 
-        # 取出订阅列表的第一个结果
-        subscription = result[0].subscription
+        # Fetch customer data from Chargebee based on email
+        customer_list = chargebee.Customer.list({"email[is]": user_email})
+        if len(customer_list) == 0:
+            return jsonify({'error': 'No customer found with this email in Chargebee'}), 404
+
+        # Fetch the customer's subscription
+        customer_id = customer_list[0].customer.id
+        subscription_list = chargebee.Subscription.list({"customer_id[is]": customer_id})
+        if len(subscription_list) == 0:
+            return jsonify({'error': 'No active subscriptions found for this customer'}), 404
+
+        subscription = subscription_list[0].subscription
+
+        # Extract necessary fields
+        subscription_items = [item.__dict__['values'] for item in subscription.subscription_items]
 
         subscription_data = {
-            'subscription_id': subscription.id,
-            'start_date': subscription.start_date,
-            'end_date': subscription.current_term_end
+            'subscription_items': subscription_items,
+            'currency_code': subscription.currency_code,
+            'billing_period_unit': subscription.billing_period_unit,
+            'status': subscription.status,
+            'started_at': subscription.started_at,
+            'current_term_end': subscription.current_term_end,
         }
+
         return jsonify(subscription_data), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 400
+
+
 
 # 更新 Chargebee 会员信息
 @api.route('/user/<string:user_id>/update', methods=['POST'])
