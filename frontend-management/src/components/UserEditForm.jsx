@@ -5,6 +5,7 @@ import PropTypes from "prop-types"; // 引入 PropTypes
 const UserEditForm = ({ visible, onCancel, onSubmit, editingMember }) => {
   const [form] = Form.useForm();
   // 当 editingMember 改变时，重新设置表单初始值
+
   useEffect(() => {
     if (editingMember) {
       form.setFieldsValue({
@@ -14,6 +15,11 @@ const UserEditForm = ({ visible, onCancel, onSubmit, editingMember }) => {
       });
     }
   }, [editingMember, form]);
+
+  const handleFinish = (values) => {
+    onSubmit(values, onCancel); // 提交时传递 onCancel 给 onSubmit
+  };
+
   return (
     <Modal
       title="Edit Member"
@@ -22,7 +28,7 @@ const UserEditForm = ({ visible, onCancel, onSubmit, editingMember }) => {
       footer={null}
     >
       {editingMember && (
-        <Form form={form} layout="vertical" onFinish={onSubmit}>
+        <Form form={form} layout="vertical" onFinish={handleFinish}>
           <Form.Item
             label="First Name"
             name="first_name"
