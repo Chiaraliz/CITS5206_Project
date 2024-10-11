@@ -2,8 +2,14 @@ from flask import Blueprint, request, jsonify
 from app.models import User, Admin
 from app.extensions import db
 import datetime
+import jwt
+
 
 api = Blueprint('api', __name__)
+
+# Secret key for signing JWT
+SECRET_KEY = 'your_secret_key'  # Change this to your secret key
+
 
 # Get all members
 @api.route('/members', methods=['GET'])
@@ -276,7 +282,8 @@ def register():
     # 日期处理
     date_of_birth = data.get('date_of_birth')
     if isinstance(date_of_birth, str):
-        date_of_birth = datetime.datetime.strptime(date_of_birth, "%d-%m-%Y").date()
+        date_of_birth = datetime.datetime.strptime(data['date_of_birth'], "%Y-%m-%d").date()
+
 
     # 创建新用户对象
     new_user = User(
@@ -319,14 +326,22 @@ def login():
               type: string
     responses:
       200:
-        description: Login successful
+        description: Login successful with JWT token
       400:
         description: Login failed, invalid email or password
     """
     data = request.get_json()
     user = User.query.filter_by(email=data['email']).first()
+    
+    # Check if user exists and password matches
     if user and user.check_password(data['password']):
-        return jsonify({"message": "Login successful", "user_id": user.id}), 200
+        # Generate JWT token
+        token = jwt.encode({
+            'user_id': user.id,
+            'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=1)  # Token expires in 1 hour
+        }, SECRET_KEY, algorithm='HS256')
+        
+        return jsonify({"message": "Login successful", "user_id": user.id, "token": token}), 200
     return jsonify({"error": "Invalid email or password"}), 400
 
 # Get user information
@@ -354,12 +369,12 @@ def get_user(user_id):
         "id": user.id,
         "first_name": user.first_name,
         "last_name": user.last_name,
+        "preferred_name": user.preferred_name,
         "email": user.email,
-        "membership_type": user.membership_type
+        "date_of_birth": user.date_of_birth.strftime("%Y-%m-%d") if user.date_of_birth else None
     }
     return jsonify(user_data), 200
 
-# Update user information
 @api.route('/user/<int:user_id>', methods=['POST'])
 def update_user(user_id):
     """
@@ -398,11 +413,13 @@ def update_user(user_id):
 
     user.first_name = data.get('first_name', user.first_name)
     user.last_name = data.get('last_name', user.last_name)
+    user.preferred_name = data.get('preferred_name', user.preferred_name)
     user.email = data.get('email', user.email)
-    user.membership_type = data.get('membership_type', user.membership_type)
+    user.date_of_birth = datetime.datetime.strptime(data.get('date_of_birth'), "%Y-%m-%d") if data.get('date_of_birth') else user.date_of_birth
 
     db.session.commit()
     return jsonify({"message": "User updated successfully"}), 200
+
 
 # User subscription
 @api.route('/subscribe', methods=['POST'])
@@ -549,37 +566,155 @@ def login_root():
     return jsonify({"error": "Invalid root credentials"}), 400
 
 # Manage Admins (e.g., List all admins, delete an admin)
-@api.route('/admin/manage', methods=['GET', 'DELETE'])
-def manage_admins():
+@api.route('/admin/manage', methods=['GET'])
+def list_admins():
     """
-    Manage Admins (List or Delete)
+    List all admins
     ---
     tags:
       - Admin
     responses:
       200:
-        description: Admin list or admin deleted
+        description: Admin list retrieved successfully
       400:
         description: Error occurred during operation
     """
-    if request.method == 'GET':
-        # List all admins
-        admins = Admin.query.all()
-        admin_list = [{
-            "id": admin.id,
-            "username": admin.username
-        } for admin in admins]
-        return jsonify(admin_list), 200
+    # List all admins
+    admins = Admin.query.all()
+    admin_list = [{
+        "id": admin.id,
+        "username": admin.username
+    } for admin in admins]
+    return jsonify(admin_list), 200
 
-    elif request.method == 'DELETE':
-        # Delete an admin by ID
-        data = request.get_json()
-        admin_id = data.get('admin_id')
-
-        if not admin_id:
-            return jsonify({"error": "Admin ID is required"}), 400
-
+@api.route('/admin/manage/<int:admin_id>', methods=['DELETE', 'POST'])
+def manage_admin(admin_id):
+    """
+    Manage Admin (Delete or Update)
+    ---
+    tags:
+      - Admin
+    parameters:
+      - name: admin_id
+        in: path
+        required: true
+        type: integer
+        description: Admin ID to delete or update
+      - name: body
+        in: body
+        required: true for POST
+        schema:
+          type: object
+          properties:
+            username:
+              type: string
+              description: New username for the admin
+            password:
+              type: string
+              description: New password for the admin
+    responses:
+      200:
+        description: Admin updated or deleted successfully
+      404:
+        description: Admin not found
+    """
+    if request.method == 'DELETE':
+        # 删除管理员
         admin = Admin.query.get_or_404(admin_id)
         db.session.delete(admin)
         db.session.commit()
         return jsonify({"message": "Admin deleted successfully"}), 200
+
+    elif request.method == 'POST':
+        # 更新管理员信息
+        data = request.get_json()
+
+        # 获取管理员实例
+        admin = Admin.query.get_or_404(admin_id)
+
+        # 更新用户名
+        if 'username' in data:
+            admin.username = data['username']
+
+        # 更新密码
+        if 'password' in data:
+            admin.set_password(data['password'])  # 确保使用哈希保存密码
+
+        db.session.commit()
+
+        return jsonify({"message": "Admin updated successfully"}), 200
+
+
+# # 统计 Chargebee 中的全部会员数量
+# @api.route('/members/count', methods=['GET'])
+# def count_all_members():
+#     try:
+#         # 从 Chargebee 获取会员列表
+#         result = chargebee.Customer.list({"limit": 100})
+#         total_members = len(result)
+#         return jsonify({"total_count": total_members}), 200
+#     except Exception as e:
+#         return jsonify({"error": str(e)}), 400
+
+# # 统计活跃会员数量（有有效订阅的会员）
+# @api.route('/members/active/count', methods=['GET'])
+# def count_active_members():
+#     try:
+#         result = chargebee.Customer.list({"limit": 100})
+#         active_members = 0
+#         for customer in result:
+#             subscription_result = chargebee.Subscription.list({"customer_id[is]": customer.customer.id})
+#             if subscription_result and subscription_result[0].subscription.status == 'active':
+#                 active_members += 1
+
+#         return jsonify({"active_count": active_members}), 200
+#     except Exception as e:
+#         return jsonify({"error": str(e)}), 400
+
+
+# #### 下面是chargebee相关
+
+# app = Flask(__name__)
+
+# # Chargebee 配置
+# chargebee.configure(site="aasyp-test", api_key="test_xE1cVWaHbs6UMqorlDHoyOGH8AU6aJhG")
+
+# # 查询所有 Chargebee 会员信息
+# chargebee.configure(site="aasyp-test", api_key="test_xE1cVWaHbs6UMqorlDHoyOGH8AU6aJhG")
+
+# # 查询所有 Chargebee 会员信息
+# @api.route('/list_customers', methods=['GET'])
+# def list_customers():
+#     try:
+#         result = chargebee.Customer.list({"limit": 100})
+#         customers = [{
+#             'id': customer.customer.id,
+#             'first_name': customer.customer.first_name,
+#             'last_name': customer.customer.last_name,
+#             'email': customer.customer.email
+#         } for customer in result]
+#         return jsonify(customers)
+#     except Exception as e:
+#         return jsonify({'error': str(e)}), 400
+
+# # 获取某个用户的订阅信息
+# @api.route('/user/<string:user_id>/subscription', methods=['GET'])
+# def get_subscription(user_id):
+#     try:
+#         # 查询该用户的所有订阅
+#         result = chargebee.Subscription.list({"customer_id[is]": user_id})
+
+#         # 取出订阅列表的第一个结果
+#         subscription = result[0].subscription
+
+#         subscription_data = {
+#             'subscription_id': subscription.id,
+#             'start_date': subscription.start_date,
+#             'end_date': subscription.current_term_end
+#         }
+#         return jsonify(subscription_data), 200
+#     except Exception as e:
+#         return jsonify({'error': str(e)}), 400
+    
+# if __name__ == '__main__':
+#     app.run(debug=True)

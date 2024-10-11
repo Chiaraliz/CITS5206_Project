@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    /* Language and Environment */
+    "target": "es2016" /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */,
+    "module": "esnext" /* Specify what module code is generated. */,
+    "jsx": "react-jsx" /* Specify what JSX code is generated. */,
+    "strict": true /* Enable all strict type-checking options. */,
+    "esModuleInterop": true /* Emit additional JavaScript to ease support for importing CommonJS modules. */,
+    "skipLibCheck": true /* Skip type checking all .d.ts files. */,
+    "forceConsistentCasingInFileNames": true /* Ensure that casing is correct in imports. */,
+    "allowJs": true /* Allow JavaScript files to be a part of your program. */,
+    "checkJs": false /* Disable error reporting in JavaScript files. */,
+    "noEmit": true /* Disable emitting files from a compilation. */,
+    "resolveJsonModule": true /* Enable importing .json files. */,
+    "isolatedModules": true /* Ensure that each file can be safely transpiled without relying on other imports. */,
+
+    /* Module Resolution */
+    "moduleResolution": "node" /* Use Node.js module resolution strategy. */,
+    "baseUrl": "./" /* Base directory to resolve non-relative module names. */,
+    "paths": {
+      "@/*": ["src/*"] /* Allow path aliasing. */
+    }
+  },
+  "include": ["src/**/*"] /* Include all files in the src directory */,
+  "exclude": ["node_modules", "dist"] /* Exclude these directories */
+}
