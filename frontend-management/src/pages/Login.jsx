@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { Button, Form, Input, message } from 'antd';
 import Logo from '../components/Logo'; // 确保正确导入 Logo 组件
-import { loginRoot } from '../services/AdminService'; // 确保指向正确的 AdminService 路径
+import { loginAdmin } from '../services/AdminService'; // 使用 loginAdmin 代替 loginRoot
 import { useNavigate } from 'react-router-dom'; // 引入 useNavigate 钩子
 
 // 使用 styled-components 定义布局
@@ -30,17 +30,18 @@ const Login = () => {
   // 表单提交时处理登录请求
   const onFinish = async (values) => {
     try {
-      // 调用 loginRoot API 函数进行用户登录
-      const response = await loginRoot(values.username, values.password);
-      // 登录成功的反馈
-      message.success(response.message);
-      console.log('Login Successful:', response);
+      // 调用 loginAdmin API 函数进行用户登录
+      const response = await loginAdmin(values.username, values.password);
       
+      // 登录成功的反馈
+      message.success('Login successful');
+      console.log('Login Successful:', response);
+
       // 跳转到 Dashboard 页面
       navigate('/dashboard'); // 假设 "/dashboard" 是 Dashboard 页面的路由路径
     } catch (error) {
       // 登录失败的反馈
-      message.error(error.response?.data?.error || 'Login failed');
+      message.error(error?.response?.data?.error || 'Login failed');
       console.error('Login failed:', error);
     }
   };
@@ -80,7 +81,6 @@ const Login = () => {
               htmlType="submit"
               disabled={
                 !clientReady || // 当客户端未准备好时禁用按钮
-                !form.isFieldsTouched(true) || // 当表单未修改时禁用按钮
                 !!form.getFieldsError().filter(({ errors }) => errors.length).length // 当表单有错误时禁用按钮
               }
             >

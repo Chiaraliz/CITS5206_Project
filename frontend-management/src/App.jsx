@@ -25,7 +25,7 @@ function App() {
             <Route path="account" element={<Account />} />
             <Route path="rootDashboard" element={<RootDashboard />} />
           </Route>
-          <Route path="EditAdmin" element={<EditAdmin />} />
+          <Route path="/editAdmin/:id" element={<EditAdmin />} />
           <Route path="addAdmin" element={<AddAdmin />} />
           <Route path="rootlogin" element={<RootLogin />} /> {/* 修改为大写 */}
           <Route path="login" element={<Login />} />
