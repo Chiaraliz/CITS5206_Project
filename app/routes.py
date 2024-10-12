@@ -215,41 +215,56 @@ def list_customers():
         return jsonify({'error': str(e)}), 400
 
 
-@api.route('/user/<string:user_id>/subscription', methods=['GET'])
+@api.route('/user/<int:user_id>/subscription', methods=['GET'])
 def get_subscription(user_id):
     try:
-        # Retrieve user email from the database
+        # 根据 user_id 查询数据库中的用户信息
         user = User.query.get_or_404(user_id)
-        user_email = user.email
+        email = user.email  # 获取用户的邮箱信息
 
-        # Fetch customer data from Chargebee based on email
-        customer_list = chargebee.Customer.list({"email[is]": user_email})
-        if len(customer_list) == 0:
-            return jsonify({'error': 'No customer found with this email in Chargebee'}), 404
+        # 使用 Chargebee API 通过邮箱查找用户的 customer_id
+        result = chargebee.Customer.list({"email[is]": email})
 
-        # Fetch the customer's subscription
-        customer_id = customer_list[0].customer.id
-        subscription_list = chargebee.Subscription.list({"customer_id[is]": customer_id})
-        if len(subscription_list) == 0:
-            return jsonify({'error': 'No active subscriptions found for this customer'}), 404
+        # 检查 Chargebee 中是否有该邮箱对应的客户
+        if not result or len(result) == 0:
+            return jsonify({"error": "No customer found with this email"}), 404
 
-        subscription = subscription_list[0].subscription
+        customer_id = result[0].customer.id
 
-        # Extract necessary fields
-        subscription_items = [item.__dict__['values'] for item in subscription.subscription_items]
+        # 查询该客户的订阅信息
+        subscription_result = chargebee.Subscription.list({"customer_id[is]": customer_id})
 
+        # 检查是否有订阅信息
+        if not subscription_result or len(subscription_result) == 0:
+            return jsonify({}), 200  # 返回一个空对象而不是 404 错误
+
+        # 取出订阅信息
+        subscription = subscription_result[0].subscription
+
+        # 处理 subscription_items 将其转换为可 JSON 序列化的格式
+        subscription_items = [
+            {
+                'item_price_id': item.item_price_id,
+                'unit_price': item.unit_price,
+                'quantity': item.quantity
+            }
+            for item in subscription.subscription_items
+        ]
+
+        # 返回用户的订阅详细信息
         subscription_data = {
-            'subscription_items': subscription_items,
+            'subscription_items': subscription_items,  # 将订阅项转换为可序列化的格式
             'currency_code': subscription.currency_code,
             'billing_period_unit': subscription.billing_period_unit,
             'status': subscription.status,
             'started_at': subscription.started_at,
-            'current_term_end': subscription.current_term_end,
+            'current_term_end': subscription.current_term_end
         }
 
         return jsonify(subscription_data), 200
+
     except Exception as e:
-        return jsonify({'error': str(e)}), 400
+        return jsonify({'error': str(e)}), 400  # 返回详细错误信息（开发时使用）
 
 
 
