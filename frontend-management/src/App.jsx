@@ -11,7 +11,7 @@ import RootLogin from "./pages/rootLogin"; // 将导入的 rootLogin 修改为 R
 import PageNotFound from "./pages/PageNotFound";
 import AppLayout from "./components/AppLayout";
 import RootAppLayout from "./components/RootAppLayout";
-import EditAdmin from "./pages/EditAdmin"; 
+import EditAdmin from "./pages/EditAdmin";
 
 function App() {
   return (
@@ -24,17 +24,11 @@ function App() {
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="users" element={<Users />} />
             <Route path="account" element={<Account />} />
-            
           </Route>
-
           <Route element={<RootAppLayout />}>
-          <Route index element={<Navigate replace to="Rootdashboard" />} />
-            
+            <Route index element={<Navigate replace to="Rootdashboard" />} />
             <Route path="rootDashboard" element={<RootDashboard />} />
           </Route>
-
-
-
           <Route path="/editAdmin/:id" element={<EditAdmin />} />
           <Route path="addAdmin" element={<AddAdmin />} />
           <Route path="rootlogin" element={<RootLogin />} /> {/* 修改为大写 */}
