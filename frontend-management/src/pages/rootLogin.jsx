@@ -102,7 +102,7 @@ const RootLogin = () => {
 
         <Form.Item>
           <Button type="default" onClick={moveBack}>
-            Cancel
+            Exit
           </Button>
         </Form.Item>
       </Form>

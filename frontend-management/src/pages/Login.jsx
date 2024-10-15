@@ -56,6 +56,7 @@ const Login = () => {
     <LoginLayout>
       {/* 显示 Logo */}
       <Logo />
+      <p>Admin Login</p>
 
       <Form
         form={form}
@@ -78,27 +79,28 @@ const Login = () => {
         </Form.Item>
 
         <Form.Item shouldUpdate>
-          {() => (
-            <Button
-              type="primary"
-              htmlType="submit"
-              loading={loading} // 按钮显示加载状态
-              disabled={
-                !clientReady || 
-                !!form.getFieldsError().filter(({ errors }) => errors.length).length
-              }
-            >
-              Log in
-            </Button>
-          )}
-        </Form.Item>
-
-        {/* Root Login 按钮 */}
-        <Form.Item>
-          <Button type="link" onClick={handleRootLogin}>
-            Root Login
+        {() => (
+        <Button
+      type="primary"
+      htmlType="submit"
+      loading={loading}
+      disabled={
+        !clientReady || 
+        !!form.getFieldsError().filter(({ errors }) => errors.length).length
+      }
+          >
+      Log in
           </Button>
-        </Form.Item>
+          )}
+          </Form.Item>
+
+      {/* Root Login 按钮 */}
+              <Form.Item>
+          <Button type="primary" onClick={handleRootLogin}>
+           Root Login
+          </Button>
+          </Form.Item>
+
       </Form>
     </LoginLayout>
   );
