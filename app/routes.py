@@ -3,6 +3,10 @@ from app.models import User, Admin
 from app.extensions import db
 import datetime
 import jwt
+import chargebee
+from flask import Flask
+
+
 
 
 api = Blueprint('api', __name__)
@@ -421,36 +425,36 @@ def update_user(user_id):
     return jsonify({"message": "User updated successfully"}), 200
 
 
-# User subscription
-@api.route('/subscribe', methods=['POST'])
-def subscribe():
-    """
-    User subscription
-    ---
-    tags:
-      - Users
-    parameters:
-      - name: body
-        in: body
-        required: true
-        schema:
-          type: object
-          properties:
-            user_id:
-              type: integer
-            subscription_type:
-              type: integer
-    responses:
-      200:
-        description: Subscription successful
-      400:
-        description: Subscription failed
-    """
-    data = request.get_json()
-    user = User.query.get_or_404(data['user_id'])
-    user.membership_type = data['subscription_type']
-    db.session.commit()
-    return jsonify({"message": "Subscription successful"}), 200
+# # User subscription
+# @api.route('/subscribe', methods=['POST'])
+# def subscribe():
+#     """
+#     User subscription
+#     ---
+#     tags:
+#       - Users
+#     parameters:
+#       - name: body
+#         in: body
+#         required: true
+#         schema:
+#           type: object
+#           properties:
+#             user_id:
+#               type: integer
+#             subscription_type:
+#               type: integer
+#     responses:
+#       200:
+#         description: Subscription successful
+#       400:
+#         description: Subscription failed
+#     """
+#     data = request.get_json()
+#     user = User.query.get_or_404(data['user_id'])
+#     user.membership_type = data['subscription_type']
+#     db.session.commit()
+#     return jsonify({"message": "Subscription successful"}), 200
 
 
 # Admin Registration
@@ -718,3 +722,131 @@ def manage_admin(admin_id):
     
 # if __name__ == '__main__':
 #     app.run(debug=True)
+
+# User subscription
+@api.route('/subscribe', methods=['POST'])
+def subscribe():
+    data = request.get_json()
+    user = User.query.get_or_404(data['user_id'])
+    user.membership_type = data['subscription_type']
+    db.session.commit()
+    return jsonify({"message": "Subscription successful"}), 200
+
+# 统计 Chargebee 中的全部会员数量
+@api.route('/members/count', methods=['GET'])
+def count_all_members():
+    try:
+        # 从 Chargebee 获取会员列表
+        result = chargebee.Customer.list({"limit": 100})
+        total_members = len(result)
+        return jsonify({"total_count": total_members}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+
+# 统计活跃会员数量（有有效订阅的会员）
+@api.route('/members/active/count', methods=['GET'])
+def count_active_members():
+    try:
+        result = chargebee.Customer.list({"limit": 100})
+        active_members = 0
+        for customer in result:
+            subscription_result = chargebee.Subscription.list({"customer_id[is]": customer.customer.id})
+            if subscription_result and subscription_result[0].subscription.status == 'active':
+                active_members += 1
+
+        return jsonify({"active_count": active_members}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+
+
+#### 下面是chargebee相关
+
+app = Flask(__name__)
+
+# Chargebee 配置
+chargebee.configure(site="aasyp-test", api_key="test_xE1cVWaHbs6UMqorlDHoyOGH8AU6aJhG")
+
+# 查询所有 Chargebee 会员信息
+chargebee.configure(site="aasyp-test", api_key="test_xE1cVWaHbs6UMqorlDHoyOGH8AU6aJhG")
+
+# 查询所有 Chargebee 会员信息
+@api.route('/list_customers', methods=['GET'])
+def list_customers():
+    try:
+        result = chargebee.Customer.list({"limit": 100})
+        customers = [{
+            'id': customer.customer.id,
+            'first_name': customer.customer.first_name,
+            'last_name': customer.customer.last_name,
+            'email': customer.customer.email
+        } for customer in result]
+        return jsonify(customers)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 400
+
+
+@api.route('/user/<string:user_id>/subscription', methods=['GET'])
+def get_subscription(user_id):
+    try:
+        # Retrieve user email from the database
+        user = User.query.get_or_404(user_id)
+        user_email = user.email
+
+        # Fetch customer data from Chargebee based on email
+        customer_list = chargebee.Customer.list({"email[is]": user_email})
+        if len(customer_list) == 0:
+            return jsonify({'error': 'No customer found with this email in Chargebee'}), 404
+
+        # Fetch the customer's subscription
+        customer_id = customer_list[0].customer.id
+        subscription_list = chargebee.Subscription.list({"customer_id[is]": customer_id})
+        if len(subscription_list) == 0:
+            return jsonify({'error': 'No active subscriptions found for this customer'}), 404
+
+        subscription = subscription_list[0].subscription
+
+        # Extract necessary fields
+        subscription_items = [item.__dict__['values'] for item in subscription.subscription_items]
+
+        subscription_data = {
+            'subscription_items': subscription_items,
+            'currency_code': subscription.currency_code,
+            'billing_period_unit': subscription.billing_period_unit,
+            'status': subscription.status,
+            'started_at': subscription.started_at,
+            'current_term_end': subscription.current_term_end,
+        }
+
+        return jsonify(subscription_data), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 400
+
+
+
+# 更新 Chargebee 会员信息
+@api.route('/user/<string:user_id>/update', methods=['POST'])
+def update_customer(user_id):
+    try:
+        data = request.get_json()
+        update_params = {}
+
+        # 如果请求中包含这些字段，则添加到更新参数中
+        if 'first_name' in data:
+            update_params['first_name'] = data['first_name']
+        if 'last_name' in data:
+            update_params['last_name'] = data['last_name']
+        if 'email' in data:
+            update_params['email'] = data['email']
+
+        # 调用 Chargebee API 更新会员信息
+        customer = chargebee.Customer.update(user_id, update_params).customer
+
+        return jsonify({
+            'id': customer.id,
+            'first_name': customer.first_name,
+            'last_name': customer.last_name,
+            'email': customer.email
+        }), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 400
+
