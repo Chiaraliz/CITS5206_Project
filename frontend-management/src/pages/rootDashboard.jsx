@@ -38,7 +38,6 @@ const RootDashboard = () => {
       console.error('Error deleting admin:', error);
     }
   };
-  
 
   // 表格列定义，增加了 Edit 和 Delete 操作
   const columns = [
@@ -59,13 +58,13 @@ const RootDashboard = () => {
         <span>
           <Button
             type="link"
-            onClick={() => navigate(`/editAdmin/${record.id}`)} // 使用 admin.id 而不是 username 作为参数
+            onClick={() => navigate(`/editAdmin/${record.id}`)} // 使用 admin.id 进行导航
           >
             Edit
           </Button>
           <Popconfirm
             title="Are you sure to delete this admin?"
-            onConfirm={() => handleDelete(record.username)} // 调用删除函数
+            onConfirm={() => handleDelete(record.id)} // 使用 id 进行删除
             okText="Yes"
             cancelText="No"
           >
