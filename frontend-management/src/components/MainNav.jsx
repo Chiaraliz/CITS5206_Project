@@ -1,21 +1,20 @@
-import { NavLink, useLocation } from "react-router-dom"; // 引入 useLocation
+import { NavLink, useLocation } from "react-router-dom";
 import styled from "styled-components";
-import { HiOutlineCog } from "react-icons/hi2"; // 导入 Admin 图标
+import { HiOutlineCog } from "react-icons/hi2";
 
-// Styles for the navigation list
 const NavList = styled.ul`
   display: flex;
-  flex-direction: column; // Vertical list
-  gap: 0.8rem; // Space between items
+  flex-direction: column;
+  gap: 0.8rem;
 `;
 
-// Styles for individual navigation links
 const StyledNavLink = styled(NavLink)`
   &:link,
   &:visited {
     display: flex;
     align-items: center;
-    gap: 1.2rem; // Gap between icon and text
+    gap: 1.2rem;
+
     color: var(--color-grey-600);
     font-size: 1.6rem;
     font-weight: 500;
@@ -23,6 +22,7 @@ const StyledNavLink = styled(NavLink)`
     transition: all 0.3s;
   }
 
+  /* This works because react-router places the active class on the active NavLink */
   &:hover,
   &:active,
   &.active:link,
@@ -33,7 +33,7 @@ const StyledNavLink = styled(NavLink)`
   }
 
   & svg {
-    width: 2.4rem; // Icon size
+    width: 2.4rem;
     height: 2.4rem;
     color: var(--color-grey-400);
     transition: all 0.3s;
@@ -43,14 +43,13 @@ const StyledNavLink = styled(NavLink)`
   &:active svg,
   &.active:link svg,
   &.active:visited svg {
-    color: var(--color-brand-600); // Change color when active or hovered
+    color: var(--color-brand-600);
   }
 `;
 
 function MainNav() {
-  const location = useLocation(); // 获取当前的路由路径
+  const location = useLocation();
 
-  // 仅显示 Admin 选项在 rootDashboard 页面
   return (
     <nav>
       <NavList>

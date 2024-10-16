@@ -3,15 +3,15 @@ import styled from "styled-components";
 import { HiOutlineHome, HiOutlineUsers, HiOutlineCog } from "react-icons/hi2"; // 导入图标
 import Logo from "./Logo"; // 引入Logo
 
-// Styled component for the sidebar layout
 const StyledSidebar = styled.aside`
-  background-color: var(--color-grey-0); // White background
-  padding: 3.2rem 2.4rem; // Padding around the sidebar content
-  border-right: 1px solid var(--color-grey-100); // Thin grey border on the right
-  grid-row: 1 / -1; // The sidebar spans the full height of the layout grid
+  background-color: var(--color-grey-0);
+  padding: 3.2rem 2.4rem;
+  border-right: 1px solid var(--color-grey-100);
+
+  grid-row: 1 / -1;
   display: flex;
-  flex-direction: column; // Stack items vertically
-  gap: 3.2rem; // Space between logo and navigation
+  flex-direction: column;
+  gap: 3.2rem;
 `;
 
 const NavList = styled.ul`

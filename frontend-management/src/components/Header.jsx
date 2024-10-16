@@ -3,15 +3,15 @@ import { UserOutlined } from "@ant-design/icons";
 import { Avatar, Button } from "antd";
 import { useNavigate } from "react-router-dom"; // Import useNavigate from react-router-dom
 
-// Styled component for the header
 const StyledHeader = styled.header`
-  background-color: var(--color-grey-0); // White background
-  padding: 1.2rem 4.8rem; // Padding inside the header
-  border-bottom: 1px solid var(--color-grey-100); // Thin grey border at the bottom
-  display: flex; // Flexbox layout to align items
-  gap: 2.4rem; // Gap between avatar, username, and logout button
-  align-items: center; // Vertically center items
-  justify-content: flex-end; // Align items to the right
+  background-color: var(--color-grey-0);
+  padding: 1.2rem 4.8rem;
+  border-bottom: 1px solid var(--color-grey-100);
+
+  display: flex;
+  gap: 2.4rem;
+  align-items: center;
+  justify-content: flex-end;
 `;
 
 function Header() {
