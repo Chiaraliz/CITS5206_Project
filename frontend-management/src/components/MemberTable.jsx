@@ -1,214 +1,97 @@
-import { Space, Table, Tag } from "antd";
-const { Column, ColumnGroup } = Table;
+import { Space, Table, Button, Modal } from "antd";
+import ColumnGroup from "antd/es/table/ColumnGroup";
+import PropTypes from "prop-types";
+import { useState } from "react";
+import axios from "axios";
 
-const data = [
-  {
-    key: "1",
-    firstName: "John",
-    lastName: "Brown",
-    age: 32,
-    address: "New York No. 1 Lake Park",
-    tags: ["nice", "developer"],
-  },
-  {
-    key: "2",
-    firstName: "Jim",
-    lastName: "Green",
-    age: 42,
-    address: "London No. 1 Lake Park",
-    tags: ["loser"],
-  },
-  {
-    key: "3",
-    firstName: "Joe",
-    lastName: "Black",
-    age: 32,
-    address: "Sydney No. 1 Lake Park",
-    tags: ["cool", "teacher"],
-  },
-  {
-    key: "4",
-    firstName: "Michael",
-    lastName: "Smith",
-    age: 28,
-    address: "San Francisco No. 5 Maple Street",
-    tags: ["funny", "engineer"],
-  },
-  {
-    key: "5",
-    firstName: "Emily",
-    lastName: "Davis",
-    age: 36,
-    address: "Chicago No. 2 River Road",
-    tags: ["charming", "manager"],
-  },
-  {
-    key: "6",
-    firstName: "Sarah",
-    lastName: "Taylor",
-    age: 29,
-    address: "Melbourne No. 3 Ocean Avenue",
-    tags: ["kind", "nurse"],
-  },
-  {
-    key: "7",
-    firstName: "James",
-    lastName: "Walker",
-    age: 41,
-    address: "Los Angeles No. 7 Elm Street",
-    tags: ["smart", "designer"],
-  },
-  {
-    key: "8",
-    firstName: "Olivia",
-    lastName: "Harris",
-    age: 30,
-    address: "Toronto No. 4 Pine Lane",
-    tags: ["friendly", "artist"],
-  },
-  {
-    key: "9",
-    firstName: "David",
-    lastName: "Johnson",
-    age: 35,
-    address: "Paris No. 6 Cherry Street",
-    tags: ["brilliant", "scientist"],
-  },
-  {
-    key: "10",
-    firstName: "Sophia",
-    lastName: "Lee",
-    age: 27,
-    address: "Hong Kong No. 9 Willow Street",
-    tags: ["hardworking", "marketer"],
-  },
-  {
-    key: "11",
-    firstName: "Daniel",
-    lastName: "Wilson",
-    age: 39,
-    address: "Berlin No. 10 Oak Road",
-    tags: ["enthusiastic", "consultant"],
-  },
-  {
-    key: "12",
-    firstName: "Mia",
-    lastName: "Clark",
-    age: 26,
-    address: "Singapore No. 12 Bay Avenue",
-    tags: ["creative", "photographer"],
-  },
-  {
-    key: "13",
-    firstName: "Ethan",
-    lastName: "Martinez",
-    age: 40,
-    address: "Tokyo No. 15 Forest Drive",
-    tags: ["dedicated", "chef"],
-  },
-  {
-    key: "14",
-    firstName: "Isabella",
-    lastName: "Lopez",
-    age: 33,
-    address: "Madrid No. 18 Blossom Street",
-    tags: ["energetic", "lawyer"],
-  },
-  {
-    key: "15",
-    firstName: "Alexander",
-    lastName: "Garcia",
-    age: 31,
-    address: "Rome No. 22 Sunset Boulevard",
-    tags: ["curious", "researcher"],
-  },
-  {
-    key: "16",
-    firstName: "Charlotte",
-    lastName: "Brown",
-    age: 37,
-    address: "Amsterdam No. 16 Canal Road",
-    tags: ["polite", "editor"],
-  },
-  {
-    key: "17",
-    firstName: "Benjamin",
-    lastName: "Moore",
-    age: 45,
-    address: "Seoul No. 20 Mountain View",
-    tags: ["wise", "consultant"],
-  },
-  {
-    key: "18",
-    firstName: "Ava",
-    lastName: "Miller",
-    age: 34,
-    address: "Dublin No. 13 Green Street",
-    tags: ["adventurous", "travel agent"],
-  },
-  {
-    key: "19",
-    firstName: "William",
-    lastName: "Davis",
-    age: 38,
-    address: "Vienna No. 11 Old Town",
-    tags: ["ambitious", "entrepreneur"],
-  },
-  {
-    key: "20",
-    firstName: "Emma",
-    lastName: "Martinez",
-    age: 29,
-    address: "Zurich No. 8 Lake View",
-    tags: ["charming", "painter"],
-  },
-];
+const { Column } = Table;
 
-const MemberTable = () => (
-  <Table dataSource={data}>
-    <ColumnGroup title="Name">
-      <Column title="First Name" dataIndex="firstName" key="firstName" />
-      <Column title="Last Name" dataIndex="lastName" key="lastName" />
-    </ColumnGroup>
-    <Column
-      title="Age"
-      dataIndex="age"
-      key="age"
-      defaultSortOrder="descend"
-      sorter={(a, b) => a.age - b.age}
-    />
-    <Column title="Address" dataIndex="address" key="address" />
-    <Column
-      title="Tags"
-      dataIndex="tags"
-      key="tags"
-      render={(tags) => (
-        <>
-          {tags.map((tag) => {
-            let color = tag.length > 5 ? "geekblue" : "green";
-            if (tag === "loser") {
-              color = "volcano";
-            }
-            return (
-              <Tag color={color} key={tag}>
-                {tag.toUpperCase()}
-              </Tag>
-            );
-          })}
-        </>
-      )}
-    />
-    <Column
-      title="Action"
-      key="action"
-      render={() => (
-        <Space size="middle">
-          <a>Edit</a>
-          <a>Delete</a>
-        </Space>
-      )}
-    />
-  </Table>
-);
+const MemberTable = ({ members, loading, onEdit }) => {
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [subscriptionStatus, setSubscriptionStatus] = useState("");
+  const [selectedMember, setSelectedMember] = useState(null);
+
+  const handleCheckStatus = async (userId) => {
+    try {
+      const response = await axios.get(`/user/${userId}/subscription`);
+      setSubscriptionStatus(response.data.status); // Assuming the status is in the 'status' field
+      setSelectedMember(userId);
+      setIsModalVisible(true);
+    } catch (error) {
+      console.error("Error fetching subscription status:", error);
+      setSubscriptionStatus("Error fetching status");
+      setIsModalVisible(true);
+    }
+  };
+
+  const handleCloseModal = () => {
+    setIsModalVisible(false);
+    setSelectedMember(null);
+    setSubscriptionStatus("");
+  };
+
+  return (
+    <>
+      <Table dataSource={members} loading={loading} rowKey="id">
+        <Column title="ID" dataIndex="id" key="id" />
+        <ColumnGroup title="Name">
+          <Column title="First Name" dataIndex="first_name" key="first_name" />
+          <Column title="Last Name" dataIndex="last_name" key="last_name" />
+        </ColumnGroup>
+        <Column title="Email" dataIndex="email" key="email" />
+        <Column
+          title="Created At"
+          dataIndex="created_at"
+          key="created_at"
+          render={(created_at) =>
+            created_at ? new Date(created_at).toLocaleDateString() : "N/A"
+          }
+        />
+        {/* 新增的 Status 列 */}
+        <Column
+          title="Status"
+          key="status"
+          render={(text, record) => (
+            <Button onClick={() => handleCheckStatus(record.id)}>
+              Fetch User Status
+            </Button>
+          )}
+        />
+        <Column
+          title="Action"
+          key="action"
+          render={(text, record) => (
+            <Space size="middle">
+              <Button onClick={() => onEdit(record)}>Edit</Button>
+            </Space>
+          )}
+        />
+      </Table>
+
+      {/* 弹窗显示状态 */}
+      <Modal
+        title={`User ${selectedMember} Status`}
+        visible={isModalVisible}
+        onOk={handleCloseModal}
+        onCancel={handleCloseModal}
+      >
+        <p>{subscriptionStatus}</p>
+      </Modal>
+    </>
+  );
+};
+
+MemberTable.propTypes = {
+  members: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      first_name: PropTypes.string.isRequired,
+      last_name: PropTypes.string.isRequired,
+      email: PropTypes.string.isRequired,
+    })
+  ).isRequired,
+  loading: PropTypes.bool.isRequired,
+  onEdit: PropTypes.func.isRequired,
+};
 
 export default MemberTable;

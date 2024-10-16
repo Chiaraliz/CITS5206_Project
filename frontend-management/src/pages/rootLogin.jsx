@@ -3,8 +3,9 @@ import styled from "styled-components";
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { Button, Form, Input, message } from 'antd';
 import Logo from '../components/Logo'; // 确保正确导入 Logo 组件
-import { loginAdmin } from '../services/AdminService'; // 使用 loginAdmin 代替 loginRoot
+import { loginRoot } from '../services/AdminService'; // 确保指向 AdminService.js
 import { useNavigate } from 'react-router-dom'; // 引入 useNavigate 钩子
+import { useMoveBack } from '../hooks/useMoveBack'; // 引入 useMoveBack 钩子
 
 // 使用 styled-components 定义布局
 const LoginLayout = styled.main`
@@ -17,31 +18,36 @@ const LoginLayout = styled.main`
   background-color: var(--color-grey-50);
 `;
 
-const Login = () => {
+const RootText = styled.h2`
+  text-align: center;
+  color: var(--color-grey-600);
+  margin: 0;
+`;
+
+const RootLogin = () => { 
   const [form] = Form.useForm();
   const [clientReady, setClientReady] = useState(false);
   const navigate = useNavigate(); // 使用 useNavigate 钩子进行页面导航
+  const moveBack = useMoveBack(); // 获取返回上一页的函数
 
-  // 当组件挂载时设置客户端准备状态
   useEffect(() => {
     setClientReady(true);
   }, []);
 
-  // 表单提交时处理登录请求
+  // 处理表单提交
   const onFinish = async (values) => {
     try {
-      // 调用 loginAdmin API 函数进行用户登录
-      const response = await loginAdmin(values.username, values.password);
-      
-      // 登录成功的反馈
-      message.success('Login successful');
+      // 调用 loginRoot API 函数进行登录
+      const response = await loginRoot(values.username, values.password);
+      // 显示成功信息
+      message.success(response.message);
       console.log('Login Successful:', response);
 
-      // 跳转到 Dashboard 页面
-      navigate('/dashboard'); // 假设 "/dashboard" 是 Dashboard 页面的路由路径
+      // 跳转到 RootDashboard 页面
+      navigate('/rootdashboard'); // 假设 "/rootdashboard" 是 RootDashboard 页面的路由路径
     } catch (error) {
-      // 登录失败的反馈
-      message.error(error?.response?.data?.error || 'Login failed');
+      // 显示错误信息
+      message.error(error.response?.data?.error || 'Login failed');
       console.error('Login failed:', error);
     }
   };
@@ -50,12 +56,13 @@ const Login = () => {
     <LoginLayout>
       {/* 在表单上方显示 Logo */}
       <Logo />
+      <RootText>Root</RootText> {/* 添加文本行 */}
 
       <Form
         form={form}
         name="login_form"
-        layout="vertical" // 设置布局为垂直，符合标准登录表单设计
-        onFinish={onFinish}
+        layout="vertical" // 设置布局为垂直
+        onFinish={onFinish} // 表单提交时调用 onFinish
       >
         {/* 用户名输入框 */}
         <Form.Item
@@ -81,6 +88,7 @@ const Login = () => {
               htmlType="submit"
               disabled={
                 !clientReady || // 当客户端未准备好时禁用按钮
+                !form.isFieldsTouched(true) || // 当表单未修改时禁用按钮
                 !!form.getFieldsError().filter(({ errors }) => errors.length).length // 当表单有错误时禁用按钮
               }
             >
@@ -88,9 +96,16 @@ const Login = () => {
             </Button>
           )}
         </Form.Item>
+        
+        {/* 取消按钮 */}
+        <Form.Item>
+          <Button type="default" onClick={moveBack}>
+            Cancel
+          </Button>
+        </Form.Item>
       </Form>
     </LoginLayout>
   );
 };
 
-export default Login;
+export default RootLogin;

@@ -1,6 +1,6 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import styled from "styled-components";
-import { HiOutlineHome, HiOutlineUsers } from "react-icons/hi2";
+import { HiOutlineCog } from "react-icons/hi2";
 
 const NavList = styled.ul`
   display: flex;
@@ -48,21 +48,19 @@ const StyledNavLink = styled(NavLink)`
 `;
 
 function MainNav() {
+  const location = useLocation();
+
   return (
     <nav>
       <NavList>
-        <li>
-          <StyledNavLink to="/dashboard">
-            <HiOutlineHome />
-            <span>Dashboard</span>
-          </StyledNavLink>
-        </li>
-        <li>
-          <StyledNavLink to="/users">
-            <HiOutlineUsers />
-            <span>Users</span>
-          </StyledNavLink>
-        </li>
+        {location.pathname.toLowerCase().startsWith("/rootdashboard") && (
+          <li>
+            <StyledNavLink to="/rootDashboard">
+              <HiOutlineCog /> {/* Admin Dashboard icon */}
+              <span>Admin</span>
+            </StyledNavLink>
+          </li>
+        )}
       </NavList>
     </nav>
   );

@@ -1,8 +1,8 @@
 import { Input, Space } from "antd";
 const { Search } = Input;
+import PropTypes from "prop-types";
 
-const onSearch = (value, _e, info) => console.log(info?.source, value);
-const SearchBar = () => (
+const SearchBar = ({ onSearch }) => (
   <Space direction="vertical">
     <Search
       placeholder="search a member"
@@ -13,4 +13,9 @@ const SearchBar = () => (
     />
   </Space>
 );
+
+SearchBar.propTypes = {
+  onSearch: PropTypes.func.isRequired,
+};
+
 export default SearchBar;

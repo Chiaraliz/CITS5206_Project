@@ -11,8 +11,8 @@ const StyledAppLayout = styled.div`
 `;
 
 const Main = styled.main`
-  background-color: var(--color-grey-50);
-  padding: 4rem 4.8rem 6.4rem;
+  background-color: var(--color-grey-50); // Light grey background for the content area
+  padding: 4rem 4.8rem 6.4rem; // Padding around the main content
 `;
 
 function AppLayout() {

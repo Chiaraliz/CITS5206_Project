@@ -1,12 +1,17 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 
 import GlobalStyles from "./styles/GlobalStyles";
+import AddAdmin from "./pages/AddAdmin";
 import Dashboard from "./pages/Dashboard";
+import RootDashboard from "./pages/rootDashboard";
 import Users from "./pages/Members";
 import Account from "./pages/Account";
 import Login from "./pages/Login";
+import RootLogin from "./pages/rootLogin";
 import PageNotFound from "./pages/PageNotFound";
 import AppLayout from "./components/AppLayout";
+import RootAppLayout from "./components/RootAppLayout";
+import EditAdmin from "./pages/EditAdmin";
 
 function App() {
   return (
@@ -20,7 +25,13 @@ function App() {
             <Route path="users" element={<Users />} />
             <Route path="account" element={<Account />} />
           </Route>
-
+          <Route element={<RootAppLayout />}>
+            <Route index element={<Navigate replace to="Rootdashboard" />} />
+            <Route path="rootDashboard" element={<RootDashboard />} />
+          </Route>
+          <Route path="/editAdmin/:id" element={<EditAdmin />} />
+          <Route path="addAdmin" element={<AddAdmin />} />
+          <Route path="rootlogin" element={<RootLogin />} /> {/* 修改为大写 */}
           <Route path="login" element={<Login />} />
           <Route path="*" element={<PageNotFound />} />
         </Routes>
