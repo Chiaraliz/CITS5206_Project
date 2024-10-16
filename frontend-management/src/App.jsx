@@ -7,7 +7,7 @@ import RootDashboard from "./pages/rootDashboard";
 import Users from "./pages/Members";
 import Account from "./pages/Account";
 import Login from "./pages/Login";
-import RootLogin from "./pages/rootLogin"; // 将导入的 rootLogin 修改为 RootLogin
+import RootLogin from "./pages/rootLogin";
 import PageNotFound from "./pages/PageNotFound";
 import AppLayout from "./components/AppLayout";
 import RootAppLayout from "./components/RootAppLayout";

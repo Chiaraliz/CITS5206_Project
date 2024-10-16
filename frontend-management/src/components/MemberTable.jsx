@@ -1,54 +1,97 @@
-import { Space, Table, Button } from "antd";
+import { Space, Table, Button, Modal } from "antd";
 import ColumnGroup from "antd/es/table/ColumnGroup";
 import PropTypes from "prop-types";
+import { useState } from "react";
+import axios from "axios";
 
 const { Column } = Table;
 
 const MemberTable = ({ members, loading, onEdit }) => {
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [subscriptionStatus, setSubscriptionStatus] = useState("");
+  const [selectedMember, setSelectedMember] = useState(null);
+
+  const handleCheckStatus = async (userId) => {
+    try {
+      const response = await axios.get(`/user/${userId}/subscription`);
+      setSubscriptionStatus(response.data.status); // Assuming the status is in the 'status' field
+      setSelectedMember(userId);
+      setIsModalVisible(true);
+    } catch (error) {
+      console.error("Error fetching subscription status:", error);
+      setSubscriptionStatus("Error fetching status");
+      setIsModalVisible(true);
+    }
+  };
+
+  const handleCloseModal = () => {
+    setIsModalVisible(false);
+    setSelectedMember(null);
+    setSubscriptionStatus("");
+  };
+
   return (
-    <Table dataSource={members} loading={loading} rowKey="id">
-      <Column title="ID" dataIndex="id" key="id" />
-      <ColumnGroup title="Name">
-        <Column title="First Name" dataIndex="first_name" key="first_name" />
-        <Column title="Last Name" dataIndex="last_name" key="last_name" />
-      </ColumnGroup>
-      <Column title="Email" dataIndex="email" key="email" />
-      <Column
-        title="Created At"
-        dataIndex="created_at"
-        key="created_at"
-        render={
-          (created_at) =>
-            created_at
-              ? new Date(created_at).toLocaleDateString() // 直接将日期字符串转换为 Date 对象
-              : "N/A" // 如果 created_at 为 null 或 undefined，显示 "N/A"
-        }
-      />
-      <Column
-        title="Action"
-        key="action"
-        render={(text, record) => (
-          <Space size="middle">
-            <Button onClick={() => onEdit(record)}>Edit</Button>
-          </Space>
-        )}
-      />
-    </Table>
+    <>
+      <Table dataSource={members} loading={loading} rowKey="id">
+        <Column title="ID" dataIndex="id" key="id" />
+        <ColumnGroup title="Name">
+          <Column title="First Name" dataIndex="first_name" key="first_name" />
+          <Column title="Last Name" dataIndex="last_name" key="last_name" />
+        </ColumnGroup>
+        <Column title="Email" dataIndex="email" key="email" />
+        <Column
+          title="Created At"
+          dataIndex="created_at"
+          key="created_at"
+          render={(created_at) =>
+            created_at ? new Date(created_at).toLocaleDateString() : "N/A"
+          }
+        />
+        {/* 新增的 Status 列 */}
+        <Column
+          title="Status"
+          key="status"
+          render={(text, record) => (
+            <Button onClick={() => handleCheckStatus(record.id)}>
+              Fetch User Status
+            </Button>
+          )}
+        />
+        <Column
+          title="Action"
+          key="action"
+          render={(text, record) => (
+            <Space size="middle">
+              <Button onClick={() => onEdit(record)}>Edit</Button>
+            </Space>
+          )}
+        />
+      </Table>
+
+      {/* 弹窗显示状态 */}
+      <Modal
+        title={`User ${selectedMember} Status`}
+        visible={isModalVisible}
+        onOk={handleCloseModal}
+        onCancel={handleCloseModal}
+      >
+        <p>{subscriptionStatus}</p>
+      </Modal>
+    </>
   );
 };
 
-// 添加 PropTypes 验证
 MemberTable.propTypes = {
   members: PropTypes.arrayOf(
     PropTypes.shape({
-      id: PropTypes.string.isRequired, // 确保成员 id 是 string 类型
-      first_name: PropTypes.string.isRequired, // 确保 first_name 是 string 类型
-      last_name: PropTypes.string.isRequired, // 确保 last_name 是 string 类型
-      email: PropTypes.string.isRequired, // 确保 email 是 string 类型
+      id: PropTypes.string.isRequired,
+      first_name: PropTypes.string.isRequired,
+      last_name: PropTypes.string.isRequired,
+      email: PropTypes.string.isRequired,
     })
-  ).isRequired, // 确保 members 是必需的数组
-  loading: PropTypes.bool.isRequired, // loading 是布尔值，必需
-  onEdit: PropTypes.func.isRequired, // onEdit 是函数，必需
+  ).isRequired,
+  loading: PropTypes.bool.isRequired,
+  onEdit: PropTypes.func.isRequired,
 };
 
 export default MemberTable;
