@@ -60,7 +60,6 @@ const MemberTable = ({ members, loading, onEdit }) => {
           }
         />
         {/* Status column now directly shows the fetched status */}
-        <Column title="Status" dataIndex="status" key="status" />
         <Column
           title="Action"
           key="action"
