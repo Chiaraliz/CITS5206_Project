@@ -28,11 +28,11 @@ const RootDashboard = () => {
   }, []);
 
   // 删除管理员的函数
-  const handleDelete = async (username) => {
+  const handleDelete = async (adminId) => {
     try {
-      await deleteAdmin(username); // 使用 deleteAdmin 函数删除管理员
+      await deleteAdmin(adminId); // 使用 adminId 作为参数
       message.success('Admin deleted successfully');
-      setAdminData(adminData.filter((admin) => admin.username !== username)); // 删除本地数据中的管理员
+      setAdminData(adminData.filter((admin) => admin.id !== adminId)); // 使用 id 进行过滤
     } catch (error) {
       message.error('Failed to delete admin');
       console.error('Error deleting admin:', error);
@@ -58,13 +58,13 @@ const RootDashboard = () => {
         <span>
           <Button
             type="link"
-            onClick={() => navigate(`/editAdmin/${record.id}`)} // 使用 admin.id 而不是 username 作为参数
+            onClick={() => navigate(`/editAdmin/${record.id}`)} // 使用 admin.id 进行导航
           >
             Edit
           </Button>
           <Popconfirm
             title="Are you sure to delete this admin?"
-            onConfirm={() => handleDelete(record.username)} // 调用删除函数
+            onConfirm={() => handleDelete(record.id)} // 使用 id 进行删除
             okText="Yes"
             cancelText="No"
           >
