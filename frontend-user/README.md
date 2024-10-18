@@ -1,34 +1,18 @@
-## Prerequisites 
+## Prerequisites
 
-Ensure the following are installed on your system: 
+Ensure the following are installed on your system:
 
-- **Node.js** (version 14.x or higher) 
-- **npm** (comes with Node.js) 
+- **Node.js** (version 14.x or higher)
+- **npm** (comes with Node.js)
 - **Git** (for version control)
-
-
 
 ## Clone the Repository
 
-Use Git to clone the project repository: 
+Use Git to clone the project repository:
 
 ```
 git clone https://github.com/Chiaraliz/CITS5206_Project.git
 ```
-
-Navigate to the project directory:
-
-```
-cd CITS5206_Project
-```
-
-Switch to `Liz` branch：
-
-```
-git checkout Liz
-```
-
-
 
 ## Install Dependencies
 
@@ -37,8 +21,6 @@ Install the required project dependencies using `npm`:
 ```
 npm install
 ```
-
-
 
 ## Run the Development Server
 
@@ -49,8 +31,6 @@ npm run dev
 ```
 
 This will run the `Vite` development server, and the app will be available on `http://localhost:5173` by default.
-
-
 
 ## Using TailwindCSS
 

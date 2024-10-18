@@ -1,19 +1,40 @@
-1. How to run the backend:
+1. ### 1. **How to Run the Backend:**
 
-Create a Virtual Environment:
-python3 -m venv venv
-source venv/bin/activate  # On Windows, use `venv\Scripts\activate`
-Install Dependencies:
+   1. **Create a Virtual Environment:**
 
-pip3 install -r requirements.txt
-Set the configuration file to initialize the Flask application with the following command:
+      ```
+      python3 -m venv venv
+      source venv/bin/activate  # On Windows, use `venv\Scripts\activate`
+      ```
 
-export FLASK_APP=app
-set FLASK_APP=app (windows)
-Run the Application: run run.py
+   2. **Install Dependencies:**
 
-2. How to update the root user.
-Open backend/app/routes.py
-line 535\536 change the root user
-root_username = "root"
-    root_password = "supersecretpassword"  # This should be stored securely in a real system
+      ```
+      pip3 install -r requirements.txt
+      ```
+
+   3. **Set the Configuration File to Initialize the Flask Application:**
+
+      ```
+      bashCopy codeexport FLASK_APP=app  # For Linux/macOS
+      set FLASK_APP=app  # For Windows
+      ```
+
+   4. **Run the Application:**
+
+      ```
+      python run.py
+      ```
+
+   ------
+
+   ### 2. **How to Update the Root User:**
+
+   1. Open the file `backend/app/routes.py`.
+
+   2. Modify lines 535 and 536 to update the root user:
+
+      ```
+      root_username = "root"
+      root_password = "supersecretpassword"  # This should be stored securely in a real system
+      ```
